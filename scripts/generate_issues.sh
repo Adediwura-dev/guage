@@ -115,6 +115,9 @@ backlog() {
     '7.14	type: test	area: report	test(report): limits footer is the last text line and a JSON field' \
     '7.15	type: test	area: report	test(report): render a report with no accounts in both formats' \
     '7.16	type: test	area: report	test(report): an account with nil facts prints no facts block' \
+    '7.17	type: test	area: report	test(report): exit mapping for accepted findings and fail-on warn' \
+    '7.18	type: test	area: report	test(report): accepted findings counted once in the summary line' \
+    '7.19	type: test	area: report	test(report): repeated rendering is byte-identical in text and JSON' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
