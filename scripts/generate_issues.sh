@@ -112,6 +112,9 @@ backlog() {
     '6.4	type: research	area: docs	docs(decisions): decide funding and applications (D-07)' \
     '6.5	type: docs	area: docs	docs(outreach): contact issuers, anchors and treasury teams' \
     '7.10	type: feature	area: model	feat(model): add Valid and Equal helpers to Thresholds and Flags' \
+    '7.14	type: test	area: report	test(report): limits footer is the last text line and a JSON field' \
+    '7.15	type: test	area: report	test(report): render a report with no accounts in both formats' \
+    '7.16	type: test	area: report	test(report): an account with nil facts prints no facts block' \
     '7.17	type: test	area: report	test(report): exit mapping for accepted findings and fail-on warn' \
     '7.18	type: test	area: report	test(report): accepted findings counted once in the summary line' \
     '7.19	type: test	area: report	test(report): repeated rendering is byte-identical in text and JSON' \
