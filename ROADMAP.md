@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T11:05Z (task 7.17, test(report): exit mapping for accepted findings and fail-on warn)
+Last updated: 2026-11-19T17:15Z (task 1.9, ci: make the sync script the only writer of the README metrics)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -280,6 +280,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-19 | CI: the roadmap gate no longer asks a pull request to rewrite the README metrics row or the badge endpoints. `scripts/sync_readme.py --check-base` fails when a branch touches either, so the script stays their only writer and two test-adding PRs cannot conflict on the same count line. Documented in `AGENTS.md` section 5 and `CONTRIBUTING.md`. | 1.9 |
 | 2026-11-19 | Task 7.10: added `Valid` and `Equal` to `model.Thresholds` and `model.Flags`, with boundary, equality and sixteen-combination tests in `internal/model/account_thresholds_test.go`. A threshold outside 0 to 255 in a decode or fixture is now detectable; the drift rules and their messages are unchanged. Backlog row added to `scripts/generate_issues.sh`. | 7.10 |
 | 2026-11-09 | Updated Drips Wave submission packet (docs/WAVE_SUBMISSION.md) for Wave 11: confirmed 200 unit tests passing, all 16 rules registered, OpenSSF Scorecard at 6.8 with live badge, live documentation site at https://posture-sec.github.io/guage/, dynamic README metric sync, and updated sibling comparison data across org repositories. | none ticked |
 | 2026-11-09 | Finalized project naming by removing all occurrences of "working name" across repository documentation, PRD, architecture, and roadmap files. Implemented dynamic README metrics synchronization (`scripts/sync_readme.py`) generating live Shields.io endpoint JSON files under `site/data/` for 200 tests and 16 rules, and enforced with `--check` in the `roadmap-check` workflow. | none ticked |
