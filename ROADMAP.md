@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T11:05Z (task 7.10, Valid and Equal helpers for Thresholds and Flags)
+Last updated: 2026-11-19T14:30Z (tasks 7.14 to 7.16, golden-free report contract tests)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 2 | 9 | 22% |
 | 5 | v0.2 features | 3 | 11 | 27% |
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
-| 7 (backlog) | Backlog | 1 | 5 | 20% |
+| 7 (backlog) | Backlog | 4 | 8 | 50% |
 | **Phases 0 to 6** | **Readiness total** | **56** | **79** | **70%** |
 | Gates | G1 to G10 | 3 | 10 | 30% |
 <!-- PROGRESS:END -->
@@ -227,6 +227,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [ ] **7.3** Alert integrations (probably never; JSON and CI cover it).
 - [ ] **7.4** Cross-check issued assets against `stellar.toml` currencies.
 - [x] **7.10** `Thresholds.Valid`, `Thresholds.Equal`, `Flags.Valid` and `Flags.Equal` in `internal/model`, so an observation can be range-checked and two observations compared. M. Deps: 2.1. Done when: `Thresholds.Valid` is false below 0 or above 255, both `Equal` methods compare every field, and `internal/model/account_thresholds_test.go` covers the boundaries, equality and all sixteen flag combinations. (done 2026-11-19: `Valid` bounds each threshold tier to 0 through 255, the range the schema fixes and the loader already enforces on declared values, and says nothing about tier order, which `sig-threshold-order` owns. `Flags.Valid` is true for all sixteen combinations because every bool is in range and no exclusion is documented; the test sweeps them so adding one is a visible change. Both `Equal` methods compare the whole struct, so a field added later is covered without editing them. No change to `internal/rules`, `internal/policy` or `internal/source`: the `compare` closures in `flagDrift` and `thrDrift` stay, since they carry a message and compare against the declared type.)
+- [x] **7.14** Limits footer contract test, independent of golden files. S. Deps: 2.6. Done when: `internal/report/limits_test.go` renders `Text` with no accounts and with one account and asserts the last non-empty line is exactly `"limits: " + report.Limits`, once and after `exit code:`; marshalled `JSON` carries one top-level `limits` key equal to `report.Limits`; and the test fails if the text renderer drops or moves the footer. (done 2026-11-19: `TestLimitsFooterIsTheLastTextLine` and `TestLimitsFooterIsAJSONField`. Moving the footer above `result:` fails both text subtests with `last non-empty line is "exit code: 0"`; deleting it fails the same plus the 7.15 test. No renderer change; issue #184.)
+- [x] **7.15** Empty report renders in both formats. S. Deps: 2.6. Done when: `internal/report/empty_test.go` renders `model.Report{ToolVersion: "test", ExitCode: model.ExitPass}` and the text carries `no accounts were checked`, `result: 0 findings (0 high, 0 warn, 0 info), 0 accepted`, `exit code: 0` and the limits footer, while the JSON has `accounts` as a present empty array and `limits` equal to `report.Limits`, failing on a nil slice or a missing footer. (done 2026-11-19: `TestEmptyReportRendersBothFormats` checks the raw `accounts` token is `[]`, because `null` and an absent key both decode to a nil Go slice. Making `prepare` leave the slice nil fails it with `accounts = null, want a present empty array []`. No renderer change and no golden touched; issue #185.)
+- [x] **7.16** An account with nil facts prints no facts block, in either format. S. Deps: 3.7. Done when: `internal/report/nil_facts_test.go` renders an account with `Facts: nil`, one High finding and a snapshot ID; the text has the heading, `findings: 1 (0 accepted)`, the rule ID and the message and none of `declared:`, `identity document:`, `minimum signers` or `expected_signers`; the JSON omits `facts` and keeps the finding; a second case clears every inner facts pointer; and removing a nil guard fails it. (done 2026-11-19: `TestAccountWithoutFactsText`, `TestAccountWithoutFactsInnerPointersText` and `TestAccountWithoutFactsJSON`. Each guard was removed in turn: the `writeDeclared` and `writeIdentity` guards fail on a printed fact line, and the `prepareFacts` and `writeReachability` guards fail with a nil dereference. The empty-block case prints `declared: nothing`, which is correct there because a run assembled the block without reading a policy file; the absent-block case does not. `Facts` stays a pointer; issue #186.)
 
 ## 6. Dependency map (critical path)
 
@@ -277,6 +280,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-19 | Tasks 7.14 to 7.16: added golden-free contract tests in `internal/report`. `limits_test.go` pins the limits footer as the last text line, after `exit code:`, and as a single top-level JSON key. `empty_test.go` pins the empty report in both formats, with `accounts` as `[]` and not `null`. `nil_facts_test.go` pins nil and empty fact blocks: findings still print, no fact line is invented, and JSON omits `facts`. Each test was shown to fail against a deliberately broken renderer. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. | 7.14, 7.15, 7.16 |
 | 2026-11-19 | Task 7.10: added `Valid` and `Equal` to `model.Thresholds` and `model.Flags`, with boundary, equality and sixteen-combination tests in `internal/model/account_thresholds_test.go`. A threshold outside 0 to 255 in a decode or fixture is now detectable; the drift rules and their messages are unchanged. Backlog row added to `scripts/generate_issues.sh`. | 7.10 |
 | 2026-11-09 | Updated Drips Wave submission packet (docs/WAVE_SUBMISSION.md) for Wave 11: confirmed 200 unit tests passing, all 16 rules registered, OpenSSF Scorecard at 6.8 with live badge, live documentation site at https://posture-sec.github.io/guage/, dynamic README metric sync, and updated sibling comparison data across org repositories. | none ticked |
 | 2026-11-09 | Finalized project naming by removing all occurrences of "working name" across repository documentation, PRD, architecture, and roadmap files. Implemented dynamic README metrics synchronization (`scripts/sync_readme.py`) generating live Shields.io endpoint JSON files under `site/data/` for 200 tests and 16 rules, and enforced with `--check` in the `roadmap-check` workflow. | none ticked |
