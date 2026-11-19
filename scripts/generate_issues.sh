@@ -121,6 +121,9 @@ backlog() {
     '7.20	type: test	area: source	test(source): fail the read when a threshold tier is null or absent' \
     '7.21	type: security	area: source	security(source): bound in-flight requests and stop retries on cancel' \
     '7.22	type: test	area: sep1	test(sep1): reject malformed hostnames before any dial' \
+    '7.29	type: test	area: threshold	test(threshold): stop the sum at the twenty signature envelope cap' \
+    '7.30	type: test	area: threshold	test(threshold): cross-check both answers over mixed signers' \
+    '7.31	type: feature	area: policy	feature(policy): report every unknown config key, not only the first' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
