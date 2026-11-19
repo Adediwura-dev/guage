@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T20:25Z (tasks 7.20 to 7.22, strict threshold decode, concurrency bounds and hostname sentinels)
+Last updated: 2026-11-19T23:21Z (tasks 7.23 to 7.25, severity bounds and two model wire contracts)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 2 | 9 | 22% |
 | 5 | v0.2 features | 3 | 11 | 27% |
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
-| 7 (backlog) | Backlog | 10 | 14 | 71% |
+| 7 (backlog) | Backlog | 13 | 17 | 76% |
 | **Phases 0 to 6** | **Readiness total** | **56** | **79** | **70%** |
 | Gates | G1 to G10 | 3 | 10 | 30% |
 <!-- PROGRESS:END -->
@@ -236,6 +236,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.20** test(source): fail the read when a threshold tier is null or absent. S. Deps: none. Done when: `internal/source/threshold_decode_test.go` tables null per tier, a string tier, a float tier, and thresholds as null, an array or absent; every refusal asserts `errors.Is(err, ErrDecode)`, no successful read carries a zero threshold, and 0, 255, 256 pin the range check at `internal/source/horizon.go:111`. (done 2026-11-19: added `internal/source/threshold_decode_test.go`; issue #145.)
 - [x] **7.21** security(source): bound in-flight requests and stop retries on cancel. M. Deps: none. Done when: `internal/source/concurrency_test.go` starts twelve Account calls with MaxConcurrent: 2 against a blocking server and asserts peak in-flight is 2, never 3; a second test answers 429 with Retry-After: 1, injects a sleep that signals on entry, cancels, and asserts the call returns and no sleep outlives it; a runtime.NumGoroutine baseline shows no leak; both tests run under -race. (done 2026-11-19: added `internal/source/concurrency_test.go`; issue #146.)
 - [x] **7.22** test(sep1): reject malformed hostnames before any dial. S. Deps: none. Done when: `internal/sep1/hostname_test.go` tables a single label, an empty label, a 64-character label, a trailing hyphen, a port, userinfo, a path, an IPv4 literal, a bracketed IPv6 literal and a 254-character name; each row asserts `errors.Is` against one of the six sentinels, and that the error contains neither the input nor a label from it, at every length. (done 2026-11-19: added `internal/sep1/hostname_test.go`; issue #147.)
+- [x] **7.23** bug(model): an out-of-range severity sorts above high and prints unknown. S. Deps: none. Done when: `Severity.Valid()` is true only for the three constants, `MarshalJSON` errors naming the number with no document string, and `internal/model/severity_bounds_test.go` covers -1, 3, the valid values, the JSON error and the ordering case that fails today. (done 2026-11-19: `Valid` accepts only `SevInfo`, `SevWarn` and `SevHigh`; `MarshalJSON` returns `model: severity N is outside the defined range` for anything else, with no bytes, and `SortFindings` compares a rank that puts an invalid value below `info`. Before the change `Severity(3)` sorted first and marshalled as `"unknown"`; after it the ordering test reads high, warn, info, invalid. No decoder change, no constant change and no golden touched; issue #133.)
+- [x] **7.24** test(model): AccountFacts must marshal null and zero as different values. S. Deps: none. Done when: `internal/model/facts_nil_test.go` asserts the nil blocks marshal as null, not `{}` or omitted, that 0 and false are emitted as values, that the set form round trips to non-nil pointers and the nil form stays nil, and that the test fails if a field gains `omitempty`. (done 2026-11-19: added `facts_nil_test.go` with exact wire strings for nil top-level blocks, nil inner pointers and zero/false pointers, plus round trips checked with `reflect.DeepEqual`. Adding `omitempty` to `expected_signers` drops the key from the nil form and fails the exact-string assertion. No production file changed and no golden touched; issue #134.)
+- [x] **7.25** test(model): AccountSnapshot sequence must stay a JSON string. S. Deps: none. Done when: a wire test in `internal/model/account_sequence_test.go` asserts the exact token `"sequence":"23472095056887808"`, rejects a numeric sequence on unmarshal and checks by reflection that the field kind is string; the test fails after a scratch edit to int64 and `go test ./internal/model -run TestAccountSnapshotSequenceIsAString -count=1` passes. (done 2026-11-19: added `account_sequence_test.go` with `TestAccountSnapshotSequenceIsAString`; the scratch int64 edit produced a numeric wire token, accepted the numeric input and reported `Sequence kind = int64`, and was reverted before this change. `model_test.go` was left untouched in the committed tree; no production file changed; issue #135.)
 
 ## 6. Dependency map (critical path)
 
@@ -286,6 +289,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-19 | Close #133, #134 and #135. `Severity.Valid` plus a marshal guard and a rank keep an out-of-range severity from sorting above high or entering a report as `"unknown"`. Added wire tests pinning AccountFacts null against zero and the AccountSnapshot sequence as a JSON string; neither of those two changed production code. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the three new test files. | 7.23, 7.24, 7.25 |
 | 2026-11-19 | Close #145, #146 and #147. Added strict threshold decoding test table in `internal/source/threshold_decode_test.go`. Added bounded concurrency (12 callers, MaxConcurrent: 2) and 429 cancellation tests in `internal/source/concurrency_test.go`. Added echo-free sentinel mapping table test in `internal/sep1/hostname_test.go`. | 7.20, 7.21, 7.22 |
 | 2026-11-19 | Tasks 7.5 to 7.7: added policy declaration coverage in `internal/policy`. Folded issuer role predicates onto one trait table, added load boundary coverage test for `gauge.example.toml`, and recorded that the loader accepts out-of-order declared thresholds. | 7.5, 7.6, 7.7 |
 | 2026-11-19 | Tasks 7.14 to 7.16: added golden-free contract tests in `internal/report`. `limits_test.go` pins the limits footer as the last text line, after `exit code:`, and as a single top-level JSON key. `empty_test.go` pins the empty report in both formats, with `accounts` as `[]` and not `null`. `nil_facts_test.go` pins nil and empty fact blocks: findings still print, no fact line is invented, and JSON omits `facts`. Each test was shown to fail against a deliberately broken renderer. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. | 7.14, 7.15, 7.16 |
