@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T11:05Z (task 7.17, test(report): exit mapping for accepted findings and fail-on warn)
+Last updated: 2026-11-19T17:15Z (task 1.9, ci: make the sync script the only writer of the README metrics)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
