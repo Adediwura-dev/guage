@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T20:25Z (tasks 7.20 to 7.22, strict threshold decode, concurrency bounds and hostname sentinels)
+Last updated: 2026-11-19T21:30Z (tasks 7.23 to 7.25, zero-width, tag block and C1 sanitizer boundary tests)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 2 | 9 | 22% |
 | 5 | v0.2 features | 3 | 11 | 27% |
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
-| 7 (backlog) | Backlog | 10 | 14 | 71% |
+| 7 (backlog) | Backlog | 13 | 17 | 76% |
 | **Phases 0 to 6** | **Readiness total** | **56** | **79** | **70%** |
 | Gates | G1 to G10 | 3 | 10 | 30% |
 <!-- PROGRESS:END -->
@@ -236,6 +236,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.20** test(source): fail the read when a threshold tier is null or absent. S. Deps: none. Done when: `internal/source/threshold_decode_test.go` tables null per tier, a string tier, a float tier, and thresholds as null, an array or absent; every refusal asserts `errors.Is(err, ErrDecode)`, no successful read carries a zero threshold, and 0, 255, 256 pin the range check at `internal/source/horizon.go:111`. (done 2026-11-19: added `internal/source/threshold_decode_test.go`; issue #145.)
 - [x] **7.21** security(source): bound in-flight requests and stop retries on cancel. M. Deps: none. Done when: `internal/source/concurrency_test.go` starts twelve Account calls with MaxConcurrent: 2 against a blocking server and asserts peak in-flight is 2, never 3; a second test answers 429 with Retry-After: 1, injects a sleep that signals on entry, cancels, and asserts the call returns and no sleep outlives it; a runtime.NumGoroutine baseline shows no leak; both tests run under -race. (done 2026-11-19: added `internal/source/concurrency_test.go`; issue #146.)
 - [x] **7.22** test(sep1): reject malformed hostnames before any dial. S. Deps: none. Done when: `internal/sep1/hostname_test.go` tables a single label, an empty label, a 64-character label, a trailing hyphen, a port, userinfo, a path, an IPv4 literal, a bracketed IPv6 literal and a 254-character name; each row asserts `errors.Is` against one of the six sentinels, and that the error contains neither the input nor a label from it, at every length. (done 2026-11-19: added `internal/sep1/hostname_test.go`; issue #147.)
+- [x] **7.23** test(sanitize): pin each zero-width rune `isDropped` removes. S. Deps: 2.5. Done when: `internal/sanitize/zero_width_test.go` adds `TestZeroWidthSet` with one row per dropped rune (U+200B, U+200C, U+200D, U+2060, U+FEFF) between `a` and `b` asserting `ab`; a run of all five between visible characters and the runes inside a `G...` key leave the visible text continuous; U+2010 and U+2011 survive in place and U+2003 collapses to one ASCII space; the test fails if a rune leaves `isDropped`. (done 2026-11-19: removing U+2060 from the case at `internal/sanitize/text.go:89` fails five subtests, including `U+2060_word_joiner`. `Text` and `isDropped` unchanged; issue #193.)
+- [x] **7.24** test(sanitize): pin the Unicode tag block at both edges. S. Deps: 2.5. Done when: `internal/sanitize/tag_block_test.go` adds `TestTagBlockIsDropped` asserting U+E0000, U+E0041 and U+E007F are each removed between `a` and `b`; the hidden word `\U000E0048\U000E0049` is removed and leaves the visible text byte-identical; U+E0080 and U+EFFFF survive unchanged. (done 2026-11-19: also pins U+DFFFF below the block. Changing `<=` to `<` on the upper bound at `internal/sanitize/text.go:93` fails `U+E007F_upper_edge` and `hidden_word_with_cancel`. Range unchanged; issue #194.)
+- [x] **7.25** test(sanitize): pin the DEL and C1 removals at their boundaries. S. Deps: 2.5. Done when: `internal/sanitize/c1_test.go` adds `TestTextDropsC1AndDEL` for U+007F, U+0080, U+0085, U+009B, U+009C and U+009F, each leaving its neighbours intact; a C1 run inside `example.com` sanitizes to `example.com` and `Domain` returns `example.com, false`; U+00A0 collapses to one space while U+00A1 and U+00E9 survive; the test fails if the bound at `internal/sanitize/text.go:79` is lowered. (done 2026-11-19: lowering the upper bound to 0x9b fails five subtests and raising the lower bound to 0x81 fails three. Drop set and `MaxFieldLen` unchanged; issue #195.)
 
 ## 6. Dependency map (critical path)
 
@@ -286,6 +289,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-19 | Tasks 7.23 to 7.25: pinned three `isDropped` sets in `internal/sanitize` with one row per rune and the neighbours that must survive. `zero_width_test.go` covers U+200B, U+200C, U+200D, U+2060 and U+FEFF, including inside a `G...` key; `tag_block_test.go` covers U+E0000 to U+E007F at both edges and a hidden tag-character word; `c1_test.go` covers DEL and U+0080 to U+009F, a C1 run inside a host through `Domain`, and the Latin-1 neighbours. Each test was shown to fail against a deliberately narrowed set. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. Closes #193, #194, #195. | 7.23, 7.24, 7.25 |
 | 2026-11-19 | Close #145, #146 and #147. Added strict threshold decoding test table in `internal/source/threshold_decode_test.go`. Added bounded concurrency (12 callers, MaxConcurrent: 2) and 429 cancellation tests in `internal/source/concurrency_test.go`. Added echo-free sentinel mapping table test in `internal/sep1/hostname_test.go`. | 7.20, 7.21, 7.22 |
 | 2026-11-19 | Tasks 7.5 to 7.7: added policy declaration coverage in `internal/policy`. Folded issuer role predicates onto one trait table, added load boundary coverage test for `gauge.example.toml`, and recorded that the loader accepts out-of-order declared thresholds. | 7.5, 7.6, 7.7 |
 | 2026-11-19 | Tasks 7.14 to 7.16: added golden-free contract tests in `internal/report`. `limits_test.go` pins the limits footer as the last text line, after `exit code:`, and as a single top-level JSON key. `empty_test.go` pins the empty report in both formats, with `accounts` as `[]` and not `null`. `nil_facts_test.go` pins nil and empty fact blocks: findings still print, no fact line is invented, and JSON omits `facts`. Each test was shown to fail against a deliberately broken renderer. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. | 7.14, 7.15, 7.16 |
