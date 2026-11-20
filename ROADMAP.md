@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-20T12:00Z (tasks 7.8, 7.9 and 7.32, rule purity, finding rule IDs and the threshold arithmetic guard)
+Last updated: 2026-11-20T12:30Z (task 5.3, markdown report format with safe escaping and fenced evidence)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -38,10 +38,10 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 2 | Core | 11 | 11 | 100% |
 | 3 | Rules | 7 | 7 | 100% |
 | 4 | Dogfood and release v0.1.0 | 2 | 9 | 22% |
-| 5 | v0.2 features | 3 | 11 | 27% |
+| 5 | v0.2 features | 4 | 11 | 36% |
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
 | 7 (backlog) | Backlog | 24 | 28 | 85% |
-| **Phases 0 to 6** | **Readiness total** | **56** | **79** | **70%** |
+| **Phases 0 to 6** | **Readiness total** | **57** | **79** | **72%** |
 | Gates | G1 to G10 | 3 | 10 | 30% |
 <!-- PROGRESS:END -->
 
@@ -202,7 +202,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 
 - [ ] **5.1** Multi-endpoint comparison with `src-disagreement`. M. Deps: 4.8.
 - [ ] **5.2** `snapshot` and `diff` with baseline files and the review banner; documented guidance to store baselines outside the audited repo. M. Deps: 4.8.
-- [ ] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5.
+- [x] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5. (done 2026-11-20: `report.Markdown` in `internal/report/markdown.go`, selected by `--format markdown` on `check` and `audit`, which used to refuse it. It prints the same facts, findings, exit code and limits footer as the text report; every chain-derived value goes through the existing `sanitize.Markdown` after a label this code writes, so none can open a line, and evidence goes through the existing `sanitize.Fenced`. The sanitizer contract did not change. `internal/report/markdown_test.go` builds a link, an image, a script tag and a fence-breaking backtick run from fragments and proves each prints as escaped text or stays inside its fence; the sample and all eighteen Appendix B scenarios gained a markdown golden, 19 files, with the 38 text and JSON goldens byte-identical. The CLI test that pinned the refusal was replaced by one that proves the flag is accepted and one that proves the exit code and footer survive the format. Not verified: how a given renderer treats a bare URL, which GitHub may autolink with the URL as its visible text; `site/guides.html` says so. `README.md` still calls markdown unimplemented in two places, because `scripts/sync_readme.py --check-base` refuses any README change on a branch, not only the metrics block AGENTS.md 5 describes; the maintainer owns that edit. 5.2 and 5.4 stay open: 5.2 waits on 4.8, and 5.4 on 5.2.)
 - [ ] **5.4** Scheduled GitHub Action template that opens an issue on findings, with minimal permissions and SHA pinning. M. Deps: 5.2, 5.3.
 - [ ] **5.5** Trustline exposure facts (issuer flags for each held asset). M. Deps: 0.6.
 - [ ] **5.6** SEP-29 memo-required check for merchant accounts. S. Deps: 0.8.
@@ -300,6 +300,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-20 | Task 5.3: added `report.Markdown` and `--format markdown` on `check` and `audit`. Every chain value passes through `sanitize.Markdown` and evidence through `sanitize.Fenced`. The sample and all eighteen Appendix B scenarios gain a markdown golden. Closes #55. | 5.3 |
 | 2026-11-20 | Close #178, #179 and #180 with three test-only contracts in `internal/rules`. `purity_test.go` proves `Evaluate`, `Facts` and every rule leave a deep-copied `Context` unchanged and that a second `Evaluate` is identical. `finding_ruleid_test.go` fires every registered rule and holds each finding's `RuleID` to its registry ID, failing on a missing row or a phantom ID. `arithmetic_guard_test.go` parses the package with `go/ast` and fails on a weight sum, a `20` cap or a `Weight` compared with 0 outside three allowlisted functions, and pins the three delegating call sites. Each was shown failing against a deliberate break. #180 asked for ID 7.10, which was already taken, so it is 7.32. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. No production code changed. | 7.8, 7.9, 7.32 |
 | 2026-11-19 | Close #133, #134 and #135. `Severity.Valid` plus a marshal guard and a rank keep an out-of-range severity from sorting above high or entering a report as `"unknown"`. Added wire tests pinning AccountFacts null against zero and the AccountSnapshot sequence as a JSON string; neither of those two changed production code. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the three new test files. | 7.26, 7.27, 7.28 |
 | 2026-11-19 | Close #163, #164 and #165. `internal/threshold/cap_test.go` pins the 20-signature envelope cap at its boundary and proves the largest weights are kept, catching a truncate-before-sort build the existing tables miss. `internal/threshold/crosscheck_test.go` compares `Reachable` and `MinSigners` with a subset search over every one-to-three-signer list and 3,000 seeded lists up to twelve, and with a count-indexed dynamic program on 400 seeded 24-signer lists (seed 20261119), shrinking any failure to a minimal counterexample; `threshold.go` unchanged. `internal/policy/decode.go` now names every unknown key in one `ErrUnknownKey` detail, sorted and joined, with kind, message and exit 2 unchanged; `unknown_keys_test.go` and a CLI row pin it. IDs 7.23 to 7.28 are skipped because open pull requests already claim them. Docs: `ARCHITECTURE.md` 6.3 and 6.6, `project_structure.md`, `site/policy.html`. | 7.29, 7.30, 7.31 |

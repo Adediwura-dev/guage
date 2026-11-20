@@ -75,7 +75,8 @@ guage/
       arithmetic_guard_test.go            # go/ast guard: no weight sum, 20 cap or stray Weight-vs-0 filter in a rule; allowlist and delegation sites pinned (7.32)
     report/
       {text,json,exit}.go                  # P0 renderers, the fact block ahead of the findings, limits footer and outcome mapping (2.6, 3.7)
-      markdown.go                         # P1 output (5.3)
+      markdown.go                         # P1 output: escaped values, fenced evidence, limits footer (5.3)
+      markdown_test.go                    # golden, hostile markup built from fragments, fencing, wording and footer (5.3)
       report_test.go                      # golden files, sanitization, determinism, exit tests and the fact block in both formats
       {limits,empty,nil_facts}_test.go    # golden-free contracts: limits footer last and a JSON key, the empty report in both formats, nil and empty fact blocks (7.14 to 7.16)
     run/
