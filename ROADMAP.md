@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T20:40Z (task 7.11, one JSON name for the clawback flag)
+Last updated: 2026-11-20T08:00Z (task 7.11, one JSON name for the clawback flag)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -259,7 +259,7 @@ The path that ran through 0.7 is open. Until 2026-11-04 it read `0.7 (impossible
 | D-07 | Funding or program applications | Open | After v0.2.0 and adoption evidence |
 | D-08 | Roadmap gate has no exemptions, including dependency bumps | Decided 2026-10-28 | Matches the owner's instruction for Airlock; assumed to apply here. Dependabot is grouped weekly |
 | D-09 | Scope-first scaffold before feature development | Decided 2026-10-28 | Owner approved task 1.12 as a narrow exception to the no-code gate: root documents, placeholders and draft data models only. Demand, protocol verification and feature gates remain open; no deployment or repository-protection changes |
-| D-10 | Scaffold toolchain | Decided 2026-10-28 | Go 1.27.3 returned by the official stable-download metadata and verified locally with `go version`; no third-party runtime module added |
+| D-10 | Scaffold toolchain | Decided 2026-10-28; patch release moved 2026-11-19 | Go 1.27.3 returned by the official stable-download metadata and verified locally with `go version`; no third-party runtime module added. Moved to 1.27.4 on 2026-11-19: `govulncheck` reports GO-2026-6859 (HTTP/1 server crash in `net/http`) against 1.27.3, reached through the HTTP client and body readers, and 1.27.4 is the fixed release. Same minor version, so no code change |
 | D-11 | Adopt the Stellar Wave playbook's Phase 10 hygiene for this repo | Decided 2026-10-28 | Owner instruction. Pattern verified against `soroauth/soroauth-go` and `plimsoll-protocol/plimsoll-indexer`, not recalled. Its contract and app phases (4 to 9) do not apply to a Go CLI with no Soroban contract, so they are skipped rather than adapted |
 | D-12 | No release tag until an auditing build exists | Decided 2026-10-28 | The playbook's Phase 10 item 6 asks for a `v0.1.0` tag. Tagging the scaffold would advertise a release that audits nothing, so the tag stays with task 4.8 |
 | D-13 | Do not apply to a Drips Wave until the gate list clears | Decided 2026-10-30 | The program docs say a rejected repository cannot be re-applied and that appeals are capped at three with waiting periods, and no Stellar Wave is open as of 2026-10-30. Spending the first application on a repository whose CLI audits nothing trades a permanent strike for nothing. See `docs/WAVE_SUBMISSION.md` |
@@ -288,6 +288,7 @@ Newest first. One row per merged change.
 | Date (UTC) | Change | Tasks |
 |---|---|---|
 | 2026-11-19 | Task 7.11: the declared-flags block of the JSON report now names the clawback bit `clawback_enabled`, matching the snapshot's `flags` block, instead of `clawback`. This is a schema change for any consumer of `expected_flags.clawback`; the TOML policy key is unchanged. `TestDeclaredFlagKeys` pins both key sets, one golden line and one documentation sample were regenerated, and a backlog row was added to `scripts/generate_issues.sh`. | 7.11 |
+| 2026-11-19 | Documentation now names Go 1.27.4, the toolchain `go.mod` already declares (the directive moved from 1.27.3 to 1.27.4 for GO-2026-6859, a `net/http` finding fixed in 1.27.4). `docs/RELEASE.md`, `project_structure.md`, `site/index.html`, `site/guides.html` and decision D-10 updated to match; the recorded 0.1.0-rc.1 run in `docs/RELEASE.md` keeps its original toolchain, since it describes what that run used. | none ticked |
 | 2026-11-19 | Close #145, #146 and #147. Added strict threshold decoding test table in `internal/source/threshold_decode_test.go`. Added bounded concurrency (12 callers, MaxConcurrent: 2) and 429 cancellation tests in `internal/source/concurrency_test.go`. Added echo-free sentinel mapping table test in `internal/sep1/hostname_test.go`. | 7.20, 7.21, 7.22 |
 | 2026-11-19 | Tasks 7.5 to 7.7: added policy declaration coverage in `internal/policy`. Folded issuer role predicates onto one trait table, added load boundary coverage test for `gauge.example.toml`, and recorded that the loader accepts out-of-order declared thresholds. | 7.5, 7.6, 7.7 |
 | 2026-11-19 | Tasks 7.14 to 7.16: added golden-free contract tests in `internal/report`. `limits_test.go` pins the limits footer as the last text line, after `exit code:`, and as a single top-level JSON key. `empty_test.go` pins the empty report in both formats, with `accounts` as `[]` and not `null`. `nil_facts_test.go` pins nil and empty fact blocks: findings still print, no fact line is invented, and JSON omits `facts`. Each test was shown to fail against a deliberately broken renderer. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. | 7.14, 7.15, 7.16 |
