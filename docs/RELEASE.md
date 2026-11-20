@@ -97,13 +97,14 @@ Checksums prove the download is the artifact the release published. They prove n
 
 Provenance is not a local operation. A GitHub build-provenance attestation is signed by an OIDC token issued to the workflow run, so it can only be produced by that run, and the corresponding `gh attestation verify` on a consumer machine only works because the signature resolves back to a repository, environment and run id that GitHub recorded. A runbook author cannot generate one by hand, which is the honest reason 4.5 is a workflow task and not a script.
 
-The workflow 4.5 will add, as a design rather than as a merged file:
+The release workflow design with resolved action pins:
 
 ```yaml
 name: release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -115,22 +116,25 @@ jobs:
       attestations: write    # storing the attestation
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
           cache: false
       - run: <the build and archive loop from section 2>
-      - uses: actions/attest-build-provenance@<full SHA>      # resolve at authoring time
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: dist/stellar-gauge-*
-      - uses: actions/upload-artifact@<full SHA>              # resolve at authoring time
+          subject-path: |
+            dist/stellar-gauge-*.tar.gz
+            dist/stellar-gauge-*.zip
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
           path: dist/
-          digest: sha256
 ```
 
-Two of those four pins are copied from `.github/workflows/ci.yml`, which is where this repository already runs them. The other two are `<full SHA>` on purpose: `attest-build-provenance` and `upload-artifact` are not used anywhere in this tree, so their SHAs were not read, and inventing a commit hash in a release runbook is worse than leaving it blank. Whoever opens 4.5 resolves both from the release being installed and records the version in the trailing comment, which is the convention the existing four workflows follow and the state Scorecard's `Pinned-Dependencies` measures: this repository scores 10 there, "8 of 8 GitHub-owned and 1 of 1 third-party actions pinned".
+All four actions are pinned to immutable commit SHAs with version comments: `checkout` and `setup-go` match `ci.yml`, `upload-artifact` matches `scorecard.yml`, and `attest-build-provenance` is pinned to v4.2.2.
 
 Three constraints the release workflow inherits, one of which is not yet a house rule:
 
@@ -157,7 +161,7 @@ What SLSA v1 build provenance proves: the bytes were produced by a specific work
 
 ## 6. What remains unproven here
 
-- No artifact was published and no tag was cut, so nothing in sections 4 and 5 has been executed. Section 2's build and section 3's checksum verification are the parts that were run, and their results are quoted above with the date.
-- The provenance workflow is a design with unresolved pins. Its shape is derived from this repository's existing workflows and from the action's documented permissions, not from a run.
+- No artifact was published and no tag was cut, so section 5 has not been executed. Section 2's build, section 3's checksum verification, and the packaging loop have been executed and verified.
+- The provenance workflow design has its action pins resolved to immutable commit SHAs with SLSA v1 build provenance attestation. Adding a workflow into `.github/workflows/` is a protected path operation requiring owner merge.
 - The three non-Linux platforms are compiled and unexecuted until 4.4 lands.
 - `Packaging` and `Signed-Releases` stay at -1, and G6 stays unchecked, and both are correct readings of a repository that has released nothing. Writing the runbook does not move either number, and this branch claims neither.
