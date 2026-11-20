@@ -126,6 +126,9 @@ backlog() {
     '7.23	type: test	area: sanitize	test(sanitize): drop the zero-width set the report never shows' \
     '7.24	type: test	area: sanitize	test(sanitize): strip the whole Unicode tag block' \
     '7.25	type: test	area: sanitize	test(sanitize): remove C1 controls and DEL from chain strings' \
+    '7.26	type: bug	area: model	bug(model): reject out-of-range severities on marshal and sort' \
+    '7.27	type: test	area: model	test(model): AccountFacts null and zero on the wire' \
+    '7.28	type: test	area: model	test(model): AccountSnapshot sequence stays a JSON string' \
     '7.29	type: test	area: threshold	test(threshold): stop the sum at the twenty signature envelope cap' \
     '7.30	type: test	area: threshold	test(threshold): cross-check both answers over mixed signers' \
     '7.31	type: feature	area: policy	feature(policy): report every unknown config key, not only the first' \

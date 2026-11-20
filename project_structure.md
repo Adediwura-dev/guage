@@ -39,6 +39,9 @@ guage/
       {finding,report,role,severity,exit}.go # findings, per-account reports and enums
       facts.go                            # the fact shapes a report prints ahead of its findings (3.7)
       model_test.go                       # severity names, fingerprint, ordering, JSON and exit-code contracts
+      account_sequence_test.go            # the sequence token stays a JSON string above 2^53
+      facts_nil_test.go                   # null and zero fact blocks on the wire, with round trips
+      severity_bounds_test.go             # valid severities, marshal refusal and invalid-severity sort order
     strkey/
       {address,checksum,seed}.go           # SEP-23 classify, CRC16 and seed detection (2.2)
       {address_test,fuzz_test}.go          # SEP-23 vectors, shape and sentinel tests; FuzzClassify
