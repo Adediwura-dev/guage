@@ -20,7 +20,7 @@ guage/
   CONTRIBUTING.md, SECURITY.md             # process drafts carrying the roadmap rule (1.8)
   LICENSE                                 # existing Apache-2.0 license
   .gitignore                              # local policies, outputs, briefings and secrets stay untracked
-  go.mod                                  # module identity, Go 1.27.3 and BurntSushi/toml v1.6.0 (ADR-004)
+  go.mod                                  # module identity, Go 1.27.4 and BurntSushi/toml v1.6.0 (ADR-004)
   go.sum                                  # checksums for the one approved module
   staticcheck.conf                        # enable all checks
   gauge.example.toml                      # the documented starting point: loads through the strict parser, and `audit` with no policy file names it (3.7)
