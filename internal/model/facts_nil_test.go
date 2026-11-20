@@ -106,7 +106,7 @@ func TestAccountFactsNullVersusZero(t *testing.T) {
 	t.Run("zero and false are values", func(t *testing.T) {
 		t.Parallel()
 		in := factsWithZeroPointers()
-		want := `{"reachability":{"low":0,"medium":0,"high":0},"declared":{"role":"other","expected_signers":0,"expected_thresholds":{"low":0,"medium":0,"high":0},"expected_flags":{"auth_required":false,"auth_revocable":false,"auth_immutable":false,"clawback":false},"home_domain":"","expect_locked":false},"identity":{"home_domain":"","reachable":false,"step":"","status":0,"hops":0,"bytes":0,"cors_present":false,"network_passphrase":"","network_matches":false,"signing_key":"","horizon_url":"","version":"","accounts":[],"malformed_accounts":0}}`
+		want := `{"reachability":{"low":0,"medium":0,"high":0},"declared":{"role":"other","expected_signers":0,"expected_thresholds":{"low":0,"medium":0,"high":0},"expected_flags":{"auth_required":false,"auth_revocable":false,"auth_immutable":false,"clawback_enabled":false},"home_domain":"","expect_locked":false},"identity":{"home_domain":"","reachable":false,"step":"","status":0,"hops":0,"bytes":0,"cors_present":false,"network_passphrase":"","network_matches":false,"signing_key":"","horizon_url":"","version":"","accounts":[],"malformed_accounts":0}}`
 		data, err := json.Marshal(in)
 		if err != nil {
 			t.Fatal(err)
