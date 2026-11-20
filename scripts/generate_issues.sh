@@ -111,6 +111,8 @@ backlog() {
     '6.3	type: research	area: rules	docs(triage): review external false-positive reports' \
     '6.4	type: research	area: docs	docs(decisions): decide funding and applications (D-07)' \
     '6.5	type: docs	area: docs	docs(outreach): contact issuers, anchors and treasury teams' \
+    '7.8	type: test	area: rules	test(rules): prove rule evaluation never mutates the observed snapshot' \
+    '7.9	type: test	area: rules	test(rules): each finding carries the ID of the rule that emitted it' \
     '7.10	type: feature	area: model	feat(model): add Valid and Equal helpers to Thresholds and Flags' \
     '7.14	type: test	area: report	test(report): limits footer is the last text line and a JSON field' \
     '7.15	type: test	area: report	test(report): render a report with no accounts in both formats' \
@@ -121,6 +123,7 @@ backlog() {
     '7.20	type: test	area: source	test(source): fail the read when a threshold tier is null or absent' \
     '7.21	type: security	area: source	security(source): bound in-flight requests and stop retries on cancel' \
     '7.22	type: test	area: sep1	test(sep1): reject malformed hostnames before any dial' \
+    '7.32	type: test	area: rules	test(rules): guard that no rule restates threshold arithmetic' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
