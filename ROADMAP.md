@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-20T14:49Z (tasks 0.4, 1.2, 3.6 demand check, account hardening, scenario fixtures)
+Last updated: 2026-11-20T15:24Z (readiness gates G8, G9 and G10 closed: branch ruleset and direct push rejection verified, risk register mitigations confirmed for all High-rated risks, and roadmap currency verified with progress table regenerated)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -42,7 +42,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
 | 7 (backlog) | Backlog | 24 | 28 | 85% |
 | **Phases 0 to 6** | **Readiness total** | **60** | **79** | **75%** |
-| Gates | G1 to G10 | 3 | 10 | 30% |
+| Gates | G1 to G10 | 6 | 10 | 60% |
 <!-- PROGRESS:END -->
 
 ## 3. Readiness gates
@@ -56,9 +56,9 @@ All must be true for 100%.
 - [ ] **G5** `govulncheck`, `staticcheck` and `go vet` are clean in CI, and the repo's Scorecard score is 8 or higher.
 - [ ] **G6** Releases are attested, and the verification command is documented and tested.
 - [ ] **G7** `PRD.md`, `ARCHITECTURE.md`, `ARCHITECTURE_ESSENTIALS.md`, `project_structure.md`, `AGENTS.md`, `CLAUDE.md` and `README.md` agree with the code.
-- [ ] **G8** Required status checks (tests and roadmap gate) are configured, and a direct push to the default branch is rejected.
-- [ ] **G9** No High-rated risk in section 8 is open without a mitigation task or an accepted decision.
-- [ ] **G10** This file is current: last updated within the latest merged PR.
+- [x] **G8** Required status checks (tests and roadmap gate) are configured, and a direct push to the default branch is rejected. (done 2026-11-20: verified via GitHub Rulesets API on `main` under ruleset id 26055352, which requires pull requests, forbids deletion and non-fast-forward pushes, and enforces strict status checks for `ci / go`, `ci / vuln` and `roadmap-check / gate`; direct push to `upstream/main` was tested and refused with 403 / "Changes must be made through a pull request", matching task 1.3's direct push refusal on commit `ae6a05d`; issue #73.)
+- [x] **G9** No High-rated risk in section 8 is open without a mitigation task or an accepted decision. (done 2026-11-20: re-read section 8 risk register against the task list and decision log; only two risks are rated High: R-2 (maintainer overload across three projects) is mitigated by decision D-04 and task 0.3, with Phase 7 backlog tasks closed; R-5 ("No findings" read as "safe") is mitigated by task 4.3 (the "what this does not check" documentation section and report footer in `internal/report.Limits`) and the wording rule in `AGENTS.md` section 4; no open High risk lacks a mitigation task or accepted decision; issue #74.)
+- [x] **G10** This file is current: last updated within the latest merged PR. (done 2026-11-20: verified that the previous merge PR #266 updated `Last updated` to `2026-11-20T10:30Z`, and this PR updates `Last updated` with the current UTC timestamp, ticks G8, G9 and G10, appends the changelog entry in section 9, and regenerates the section 2 progress table via `scripts/roadmap_progress.sh --check`; issue #75.)
 
 ## 4. Current focus
 
@@ -300,6 +300,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-20 | Close readiness gates G8, G9 and G10: verify branch ruleset id 26055352 on main enforces required PRs, no deletion, no force push and strict status checks (ci / go, ci / vuln, roadmap-check / gate) with direct push rejection (G8); verify section 8 risk register has mitigations or accepted decisions for all High-rated risks (G9); verify ROADMAP.md is current with progress table regenerated and Last updated stamped in UTC (G10). Closes #73, closes #74, closes #75 | G8, G9, G10 |
 | 2026-11-20 | Close #7, #17 and #42. Task 0.4: validated demand with three named operators (Carlos M. from Accensa, Elena R. for retail anchor merchant gateway, Marcus T. for tokenized asset issuer treasury) who all confirmed scheduled weekly or daily posture audits against declared signers and flags. Task 1.2: confirmed account and org hardening with hardware key and passkey 2FA, recovery email protection, org-wide 2FA enforcement and minimal owner list. Task 3.6: verified Appendix B scenario fixtures and golden test suite under gate G2. | 0.4, 1.2, 3.6 |
 | 2026-11-20 | Task 4.5: resolved action pins in `docs/RELEASE.md` for build provenance attestation (`actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8` v4.2.2 and `actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9` v7.0.2). Verified cross-platform builds, archive generation, and checksum verification. Recorded status for tasks 4.5, 4.6, and 4.7. | none ticked |
 | 2026-11-20 | Task 5.3: added `report.Markdown` and `--format markdown` on `check` and `audit`. Every chain value passes through `sanitize.Markdown` and evidence through `sanitize.Fenced`. The sample and all eighteen Appendix B scenarios gain a markdown golden. Closes #55. | 5.3 |
