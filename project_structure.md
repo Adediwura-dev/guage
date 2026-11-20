@@ -19,6 +19,7 @@ guage/
   README.md                                # status, limits and roadmap rule (1.10)
   CONTRIBUTING.md, SECURITY.md             # process drafts carrying the roadmap rule (1.8)
   LICENSE                                 # existing Apache-2.0 license
+  .gitattributes                          # line ending normalizations pinned to LF for deterministic golden tests
   .gitignore                              # local policies, outputs, briefings and secrets stay untracked
   go.mod                                  # module identity, Go 1.27.4 and BurntSushi/toml v1.6.0 (ADR-004)
   go.sum                                  # checksums for the one approved module

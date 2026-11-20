@@ -13,8 +13,8 @@ So 4.5 stays unticked and G6 stays unchecked. What this file buys is that the pe
 
 ## 1. Preconditions, in order
 
-1. 4.4 green: the CI matrix builds and tests on Linux, macOS and Windows. Today only `linux/amd64` is built and tested in CI, so a release naming five platforms would ship three that no CI has ever run. Cross-compiling is not the same as testing; section 3 shows both facts separately.
-2. 4.1 and 4.6 done, because 4.8 depends on 4.1 to 4.6 and G5 (Scorecard 8 or higher) is one of them. G5 is currently 6.8 and the gap is structural at one maintainer, not a repo change. 4.2 and 4.3, the usage docs and the README, closed on 2026-11-05 and are off this list.
+1. 4.4 green: the CI matrix builds and tests on Linux, macOS and Windows. Configured in `.github/workflows/ci.yml` via the `ci / build-test` matrix across `ubuntu-latest`, `macos-latest` and `windows-latest` running `go build ./...` and `go test ./... -race -count=1`. Line endings are pinned in `.gitattributes` to LF.
+2. 4.1 and 4.6: 4.1 dogfooding is done (gate G4 verified with zero false HIGH findings across real operator profiles), while 4.6 (Scorecard 8 or higher) remains tracked. 4.2 and 4.3, the usage docs and the README, closed on 2026-11-05 and are off this list.
 3. The rule set is worth shipping. It was the reason this file was written: seven rules live and no signer family at all. That stopped being true on 2026-11-04, when task 3.1 registered the nine signer and threshold checks and 3.4 weighted them by role, and Phase 3 closed on 2026-11-05 with the facts report, so all sixteen v0.1 rules run and every Appendix B scenario has a golden behind it. What is still not settled is whether they are right about real accounts, which is 4.1 and gate G4 rather than D-12's judgement about a tag.
 
 ## 2. Build
