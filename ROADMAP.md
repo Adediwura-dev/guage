@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-19T20:25Z (tasks 7.20 to 7.22, strict threshold decode, concurrency bounds and hostname sentinels)
+Last updated: 2026-11-20T08:01Z (task 5.3, markdown output with escaped values and fenced evidence)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -38,10 +38,10 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 2 | Core | 11 | 11 | 100% |
 | 3 | Rules | 7 | 7 | 100% |
 | 4 | Dogfood and release v0.1.0 | 2 | 9 | 22% |
-| 5 | v0.2 features | 3 | 11 | 27% |
+| 5 | v0.2 features | 4 | 11 | 36% |
 | 6 | Release v0.2.0 and community | 0 | 5 | 0% |
 | 7 (backlog) | Backlog | 10 | 14 | 71% |
-| **Phases 0 to 6** | **Readiness total** | **56** | **79** | **70%** |
+| **Phases 0 to 6** | **Readiness total** | **57** | **79** | **72%** |
 | Gates | G1 to G10 | 3 | 10 | 30% |
 <!-- PROGRESS:END -->
 
@@ -202,7 +202,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 
 - [ ] **5.1** Multi-endpoint comparison with `src-disagreement`. M. Deps: 4.8.
 - [ ] **5.2** `snapshot` and `diff` with baseline files and the review banner; documented guidance to store baselines outside the audited repo. M. Deps: 4.8.
-- [ ] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5.
+- [x] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5. (done 2026-11-20: `report.Markdown` in `internal/report/markdown.go`, selected by `--format markdown` on `check` and `audit`, which used to refuse it. It prints the same facts, findings, exit code and limits footer as the text report; every chain-derived value goes through the existing `sanitize.Markdown` after a label this code writes, so none can open a line, and evidence goes through the existing `sanitize.Fenced`. The sanitizer contract did not change. `internal/report/markdown_test.go` builds a link, an image, a script tag and a fence-breaking backtick run from fragments and proves each prints as escaped text or stays inside its fence; the sample and all eighteen Appendix B scenarios gained a markdown golden, 19 files, with the 38 text and JSON goldens byte-identical. The CLI test that pinned the refusal was replaced by one that proves the flag is accepted and one that proves the exit code and footer survive the format. Not verified: how a given renderer treats a bare URL, which GitHub may autolink with the URL as its visible text; `site/guides.html` says so. `README.md` still calls markdown unimplemented in two places, because `scripts/sync_readme.py --check-base` refuses any README change on a branch, not only the metrics block AGENTS.md 5 describes; the maintainer owns that edit. 5.2 and 5.4 stay open: 5.2 waits on 4.8, and 5.4 on 5.2.)
 - [ ] **5.4** Scheduled GitHub Action template that opens an issue on findings, with minimal permissions and SHA pinning. M. Deps: 5.2, 5.3.
 - [ ] **5.5** Trustline exposure facts (issuer flags for each held asset). M. Deps: 0.6.
 - [ ] **5.6** SEP-29 memo-required check for merchant accounts. S. Deps: 0.8.
@@ -286,6 +286,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-20 | Task 5.3, closes #55: markdown output. `report.Markdown` renders the text report's content as GitHub-flavoured markdown, `--format markdown` is accepted by `check` and `audit`, values are escaped with `sanitize.Markdown` and evidence fenced with `sanitize.Fenced` (no sanitizer change), and 19 markdown goldens join the 38 existing ones unchanged. `ARCHITECTURE.md` 9 and 15, `ARCHITECTURE_ESSENTIALS.md` 6 and 13, `project_structure.md` and `site/guides.html` (new Markdown output section) and `site/rules.html` updated; `README.md` left alone because the sync gate owns the whole file, so its two stale markdown lines are the maintainer's. #54 (5.2) and #56 (5.4) not started: 5.2 depends on 4.8, which is open, and 5.4 depends on 5.2. | 5.3 |
 | 2026-11-19 | Close #145, #146 and #147. Added strict threshold decoding test table in `internal/source/threshold_decode_test.go`. Added bounded concurrency (12 callers, MaxConcurrent: 2) and 429 cancellation tests in `internal/source/concurrency_test.go`. Added echo-free sentinel mapping table test in `internal/sep1/hostname_test.go`. | 7.20, 7.21, 7.22 |
 | 2026-11-19 | Tasks 7.5 to 7.7: added policy declaration coverage in `internal/policy`. Folded issuer role predicates onto one trait table, added load boundary coverage test for `gauge.example.toml`, and recorded that the loader accepts out-of-order declared thresholds. | 7.5, 7.6, 7.7 |
 | 2026-11-19 | Tasks 7.14 to 7.16: added golden-free contract tests in `internal/report`. `limits_test.go` pins the limits footer as the last text line, after `exit code:`, and as a single top-level JSON key. `empty_test.go` pins the empty report in both formats, with `accounts` as `[]` and not `null`. `nil_facts_test.go` pins nil and empty fact blocks: findings still print, no fact line is invented, and JSON omits `facts`. Each test was shown to fail against a deliberately broken renderer. No production code changed. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. | 7.14, 7.15, 7.16 |
