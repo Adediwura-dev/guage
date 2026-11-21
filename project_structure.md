@@ -45,6 +45,7 @@ guage/
       model_test.go                       # severity names, fingerprint, ordering, JSON and exit-code contracts
       account_sequence_test.go            # the sequence token stays a JSON string above 2^53
       facts_nil_test.go                   # null and zero fact blocks on the wire, with round trips
+      finding_json_test.go                # exact seven Finding JSON keys without omitempty (7.62)
       {facts_identity,facts_declared}_test.go # network verdict without passphrase guard and typed DeclaredFacts.Role (7.57, 7.58)
       severity_bounds_test.go             # valid severities, marshal refusal and invalid-severity sort order
     strkey/
@@ -70,7 +71,7 @@ guage/
       {config,expectations,accept}.go      # policy declarations, no decoding or acceptance logic
       {decode,validate,roles}.go           # strict loading, rejection kinds, network passphrases and the Appendix A role floors (2.4, 3.4)
       config_test.go                       # loader tests, including that the shipped example policy loads (2.4)
-      {accept,roles,roles_keys,roles_mutation}_test.go # acceptance refusals, 16x5 role-floor table, raised counts and isolation (3.4, 7.54 to 7.56)
+      {accept,roles,roles_keys,roles_mutation,seed_shape,home_domain}_test.go # acceptance refusals, 16x5 role-floor table, seed shape rejection, SEP-1 home domain labels and isolation (3.4, 7.54 to 7.56, 7.63, 7.64)
       unknown_keys_test.go                 # one load names every unknown key, sorted, never a value (7.31)
     source/
       source.go                           # Source interface and the passphrase comparison

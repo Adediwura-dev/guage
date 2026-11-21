@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T13:05Z (gate G7 sweep: documents agree with code, recorded readings for G5 and G6)
+Last updated: 2026-11-21T13:10Z (tasks 7.62 to 7.64: seed shape rejection, home domain validation, and finding JSON keys)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 9 | 11 | 81% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 54 | 58 | 93% |
+| 7 (backlog) | Backlog | 57 | 61 | 93% |
 | **Phases 0 to 6** | **Readiness total** | **67** | **79** | **84%** |
 | Gates | G1 to G10 | 8 | 10 | 80% |
 <!-- PROGRESS:END -->
@@ -281,6 +281,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.59** fix(run): build the identity fetcher only when an observed account publishes a home domain. (done 2026-11-19; issue #204)
 - [x] **7.60** test(run): pin that one panicking rule becomes exactly one `src-rule-panic` finding on that account and leaves other accounts untouched. (done 2026-11-19; issue #203)
 - [x] **7.61** test(run): pin that account reads peak at the configured concurrency limit and that every account is still observed. (done 2026-11-19; issue #202)
+- [x] **7.62** test(model): pin exact seven Finding JSON keys without omitempty. S. Done when: `internal/model/finding_json_test.go` pins the exact seven Finding JSON keys (`accepted`, `account`, `evidence`, `fingerprint`, `message`, `rule_id`, `severity`). (done 2026-11-19; issue #136)
+- [x] **7.63** security(policy): validate policy home_domain against SEP-1 hostname label rules. S. Done when: `validHomeDomain` enforces SEP-1 hostname label rules with table and agreement tests in `internal/policy/home_domain_test.go`. (done 2026-11-19; issue #137)
+- [x] **7.64** security(policy): reject 56-char base32 seed shape regardless of checksum. S. Done when: `containsSeed` in `internal/policy/decode.go` rejects any 56-character base32 token starting with S/s, tested in `internal/policy/seed_shape_test.go`. (done 2026-11-19; issue #138)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -330,6 +333,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Tasks 7.62 to 7.64 (close #252, close #243): pin exact seven Finding JSON keys (`internal/model/finding_json_test.go`), validate policy `home_domain` against SEP-1 hostname label rules (`internal/policy/home_domain_test.go`), and reject 56-char base32 seed shape regardless of checksum (`internal/policy/seed_shape_test.go`). | 7.62, 7.63, 7.64 |
 | 2026-11-21 | Gate G7 closes on a recorded sweep bringing every document into agreement with the code (close #241). Updated ARCHITECTURE.md, ARCHITECTURE_ESSENTIALS.md, project_structure.md, CONTRIBUTING.md, SECURITY.md, PRD.md, AGENTS.md, site/status.html, and site/mechanics.html to reflect Phase 3 completion, 16 registered rules, facts report, 200 passing tests, 38 golden files, site motion layer, and dynamic README sync. Recorded observations for gate G5 (issue #70: Scorecard 6.8 with 3 branch protection warnings under D-14, ci / go and ci / vuln clean in run 42627808348) and gate G6 (issue #71: 0 releases and 0 tags under D-12, attestation requires hosted tag workflow). | G7 |
 | 2026-11-21 | Tasks 7.59 to 7.61 (close #240): build identity fetcher lazily only when an observed account has a home domain (`internal/run/identity_lazy_test.go`), pin panic containment to one `src-rule-panic` finding (`internal/run/panic_containment_test.go`), and pin concurrency limit peak (`internal/run/semaphore_peak_test.go`). | 7.59, 7.60, 7.61 |
 | 2026-11-21 | Tasks 7.57 and 7.58 (close #232): refuse identity facts that carry a network verdict without a passphrase (`internal/model/facts_identity_test.go`), and type `DeclaredFacts.Role` as `model.Role` (`internal/model/facts_declared_test.go`). | 7.57, 7.58 |

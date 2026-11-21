@@ -135,6 +135,9 @@ backlog() {
     '7.59	type: bug	area: run	fix(run): build the identity fetcher only when a domain needs it' \
     '7.60	type: test	area: run	test(run): one panicking rule produces one src-rule-panic finding' \
     '7.61	type: test	area: run	test(run): cap in-flight account reads at the concurrency limit' \
+    '7.62	type: test	area: model	test(model): pin exact seven Finding JSON keys without omitempty' \
+    '7.63	type: security	area: policy	security(policy): validate policy home_domain against SEP-1 hostname label rules' \
+    '7.64	type: security	area: policy	security(policy): reject 56-char base32 seed shape regardless of checksum' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
