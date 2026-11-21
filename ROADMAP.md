@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T10:40Z (task 7.7: cover every rule with a zero-value context)
+Last updated: 2026-11-21T10:45Z (chore(deps): bump actions-weekly group)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -311,6 +311,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Bump actions-weekly group in GitHub workflows: actions/setup-go to v7.1.0 and github/codeql-action. | none ticked |
 | 2026-11-20 | Task 7.7 (close #177): cover every registered rule with zero, missing-only, and mismatch-only contexts in `internal/rules/zero_context_test.go`. | 7.7 |
 | 2026-11-20 | Task 7.42 (close #126): scope accepted risks to one network in policy and run, with tests covering network isolation in `internal/run/accept_network_test.go`. | 7.42 |
 | 2026-11-20 | Task 7.41 (close #125): drop Unicode format characters (category Cf) before hashing evidence in `model.Finding`, with tests covering U+200B, U+FEFF, U+202E, U+2060. | 7.41 |
