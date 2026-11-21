@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T10:55Z (task 7.37: pin registry evaluation order before reports sort)
+Last updated: 2026-11-21T11:00Z (task 7.43: consume OSC 8 hyperlinks whole, URL included)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 5 | 11 | 45% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 37 | 41 | 90% |
+| 7 (backlog) | Backlog | 38 | 42 | 90% |
 | **Phases 0 to 6** | **Readiness total** | **63** | **79** | **79%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -264,6 +264,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.40** fix(cli): share format rejection diagnostics. S. Deps: none. Done when: `cmd/stellar-gauge/format.go` supplies the markdown-specific and generic messages, and both `check` and `audit` use the helper for rejected formats; existing markdown support remains enabled. (done 2026-11-20: both commands now use the helper and `format_flag_test.go` pins the identical exit-2 line for YAML and empty formats; markdown remains accepted as implemented in task 5.3; issue #210.)
 - [x] **7.41** Fingerprint evidence after the format-character filter, so evidence that prints the same hashes the same. S. Deps: 2.1. Done when: `normalize` in `internal/model/finding.go` drops every rune matching `unicode.Is(unicode.Cf, r)` before `strings.Fields`; `internal/model/finding_normalize_test.go` verifies format characters collapse to the clean digest. (done 2026-11-19; issue #125)
 - [x] **7.42** Scope accepted risks to one network. S. Deps: 2.4. Done when: `internal/policy/accept.go` gains optional `network` key in `[[accept]]` blocks, matching against `NetworkPassphrase`; unpinned entries continue matching all networks; `internal/run/accept_network_test.go` verifies isolation between mainnet and testnet. (done 2026-11-19; issue #126)
+- [x] **7.43** Consume OSC 8 hyperlinks whole: `internal/sanitize/osc_test.go` exercises BEL and ST terminations, embedded CSI colour and unterminated tails through `Text()`. S. Deps: 2.5. Done when: `go test ./internal/sanitize -run TestOSC8HyperlinkConsumedWhole -race -count=1` passes, and the test fails if hyperlink escapes leave any URL behind. (done 2026-11-20: `internal/sanitize/osc_test.go` added covering BEL, ST, embedded ESC and unterminated tail cases; label survival and absence of `]8;;`, `http` and URI hosts verified; issue #196)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -313,6 +314,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Task 7.43 (close #196): added `internal/sanitize/osc_test.go` covering BEL, ST, embedded ESC and unterminated tail cases to verify OSC 8 hyperlinks are consumed whole with no URL residual. | 7.43 |
 | 2026-11-21 | Task 7.37 (close #197): added `internal/rules/order_test.go` to pin the pre-sort evaluation finding sequence in registry order. | 7.37 |
 | 2026-11-21 | Task 7.36 (close #198): added `internal/rules/registry_ids_test.go` to pin the count (16), uniqueness, and shape of rule IDs in the registry across the six allowed prefix families. | 7.36 |
 | 2026-11-21 | Bump actions-weekly group in GitHub workflows: actions/setup-go to v7.1.0 and github/codeql-action. | none ticked |
