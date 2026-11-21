@@ -119,6 +119,9 @@ backlog() {
     '7.33	type: security	area: sanitize	security(sanitize): conformance matrix across all four entry points' \
     '7.34	type: test	area: run	test(run): keep the first account error when a later read fails' \
     '7.35	type: fix	area: run	fix(run): stop the run when the context ends between stages' \
+    '7.38	type: test	area: run	test(run): prove network mismatch skips identity fetches' \
+    '7.39	type: feature	area: cli	feat(cli): expose bounded concurrency on check' \
+    '7.40	type: bug	area: cli	fix(cli): share format rejection diagnostics' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \

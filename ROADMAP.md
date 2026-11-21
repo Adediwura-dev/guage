@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T10:20Z (prepare v0.2.0 release workflow and attestation path; task 6.2)
+Last updated: 2026-11-21T10:25Z (tasks 7.38-7.40: mismatch short-circuit, bounded check concurrency, and format rejection)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 5 | 11 | 45% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 29 | 33 | 87% |
+| 7 (backlog) | Backlog | 32 | 36 | 88% |
 | **Phases 0 to 6** | **Readiness total** | **63** | **79** | **79%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -256,6 +256,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.34** Keep the first account error when a later read fails (issue #200). M. Deps: 2.8. Done when: `TestFirstAccountErrorSurvives` passes `-race -count=20` with A failing first, B released only after, C never read, and the error wrapping `errA` with A's ID and not `errB`. (done 2026-11-20: the test exposed that workers raced for the semaphore, so C was read first in 2649 of 3000 runs; `fetchAll` now takes slots in policy order and checks the context after winning one, approved by the owner as outside the fail closure. Passes 3000 of 3000.)
 - [x] **7.35** Stop the run when the context ends between stages (issue #201). M. Deps: 2.8, 3.5. Done when: a run cancelled during `Network` against a mismatched endpoint returns `context.Canceled`, a zero report and builds no identity fetcher. (done 2026-11-20: `Run` checks its context after observe and before returning, both wrapped with `run:`.)
 
+- [x] **7.38** test(run): prove a network mismatch skips identity fetches too. S. Deps: none. Done when: `internal/run/mismatch_short_circuit_test.go` drives `Check` on testnet against a mainnet source whose account read and identity factory are fatal tripwires, and asserts two skipped high mismatch findings plus `ExitFindings`. (done 2026-11-20: added the test and confirmed it passes under the race detector; issue #208.)
+- [x] **7.39** feat(cli): expose bounded concurrency on `check`. M. Deps: none. Done when: `--concurrency` defaults to 8, accepts 1 through 32, reports exit 2 outside the range, reaches `CheckRequest.Concurrency`, and `cmd/stellar-gauge/concurrency_flag_test.go` measures peak in-flight account reads at 1 and the default. (done 2026-11-20: added `parseConcurrency`, threaded the value to `run.Check`, and measured peak account reads through an injected source; issue #209.)
+- [x] **7.40** fix(cli): share format rejection diagnostics. S. Deps: none. Done when: `cmd/stellar-gauge/format.go` supplies the markdown-specific and generic messages, and both `check` and `audit` use the helper for rejected formats; existing markdown support remains enabled. (done 2026-11-20: both commands now use the helper and `format_flag_test.go` pins the identical exit-2 line for YAML and empty formats; markdown remains accepted as implemented in task 5.3; issue #210.)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -305,6 +308,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-20 | Close #208, #209 and #210. Added a network-mismatch short-circuit test with fatal account and identity tripwires. Exposed bounded `check --concurrency` (default 8, range 1–32) and measured peak account reads through the CLI request path. Shared the rejected-format diagnostic between `check` and `audit`; existing markdown output remains supported. Updated the backlog generator and project structure. | 7.38, 7.39, 7.40 |
 | 2026-11-20 | Task 6.2: prepare the v0.2.0 attested release workflow in .github/workflows/release.yml with build provenance attestation and verify instructions in docs/RELEASE.md. | none ticked |
 | 2026-11-20 | Task 6.1 (close #61): align v0.2 documents across PRD.md, ARCHITECTURE.md, and ARCHITECTURE_ESSENTIALS.md; mark task 6.1 complete. | 6.1 |
 | 2026-11-20 | Tasks 7.33 to 7.35 (close #199, #200, #201): sanitizer conformance matrix over all four entry points; `fetchAll` takes semaphore slots in policy order so the first account error survives and a queued account is never read; `Run` checks its context after observe and before returning so a cancelled run yields no report. Backlog rows added to `scripts/generate_issues.sh`. | 7.33, 7.34, 7.35 |
