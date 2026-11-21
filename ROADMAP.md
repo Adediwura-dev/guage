@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T11:15Z (task 7.47: flag IDN home domains and their punycode form)
+Last updated: 2026-11-21T11:25Z (task 5.5: trustline exposure facts for held assets)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -38,10 +38,10 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 2 | Core | 11 | 11 | 100% |
 | 3 | Rules | 7 | 7 | 100% |
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
-| 5 | v0.2 features | 5 | 11 | 45% |
+| 5 | v0.2 features | 6 | 11 | 54% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
 | 7 (backlog) | Backlog | 40 | 44 | 90% |
-| **Phases 0 to 6** | **Readiness total** | **63** | **79** | **79%** |
+| **Phases 0 to 6** | **Readiness total** | **64** | **79** | **81%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
 
@@ -204,7 +204,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **5.2** `snapshot` and `diff` with baseline files and the review banner; documented guidance to store baselines outside the audited repo. M. Deps: 4.8. (done 2026-11-20: `model.Baseline` and `model.DiffReport` in `internal/model/baseline.go`, `run.Snapshot` in `internal/run/snapshot.go`, `run.Diff` in `internal/run/diff.go`, `report.DiffText`, `report.DiffJSON` and `report.DiffMarkdown` in `internal/report/diff.go`, and the `snapshot` and `diff` subcommands in `cmd/stellar-gauge/`. `snapshot --config <cfg> --out <file>` records observed `AccountSnapshot` entries with schema version 1 and the mandatory review banner warning that a baseline is a record of state, not an approval of security. `diff --config <cfg> --baseline <file> [--format text|json|markdown]` fetches live account observations and compares thresholds, added/removed/weight-changed signers, flags and home domain against the baseline, exiting 0 on match and 1 on drift. Security guidance on storing baselines outside the audited repo to mitigate threat GB1 documented in `site/guides.html`. 5.4 now has its dependencies satisfied.)
 - [x] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5. (done 2026-11-20: `report.Markdown` in `internal/report/markdown.go`, selected by `--format markdown` on `check` and `audit`, which used to refuse it. It prints the same facts, findings, exit code and limits footer as the text report; every chain-derived value goes through the existing `sanitize.Markdown` after a label this code writes, so none can open a line, and evidence goes through the existing `sanitize.Fenced`. The sanitizer contract did not change. `internal/report/markdown_test.go` builds a link, an image, a script tag and a fence-breaking backtick run from fragments and proves each prints as escaped text or stays inside its fence; the sample and all eighteen Appendix B scenarios gained a markdown golden, 19 files, with the 38 text and JSON goldens byte-identical. The CLI test that pinned the refusal was replaced by one that proves the flag is accepted and one that proves the exit code and footer survive the format. Not verified: how a given renderer treats a bare URL, which GitHub may autolink with the URL as its visible text; `site/guides.html` says so. `README.md` still calls markdown unimplemented in two places, because `scripts/sync_readme.py --check-base` refuses any README change on a branch, not only the metrics block AGENTS.md 5 describes; the maintainer owns that edit. 5.2 and 5.4 stay open: 5.2 waits on 4.8, and 5.4 on 5.2.)
 - [ ] **5.4** Scheduled GitHub Action template that opens an issue on findings, with minimal permissions and SHA pinning. M. Deps: 5.2, 5.3.
-- [ ] **5.5** Trustline exposure facts (issuer flags for each held asset). M. Deps: 0.6.
+- [x] **5.5** Trustline exposure facts (issuer flags for each held asset). M. Deps: 0.6. (done 2026-11-19: `internal/model/facts.go` defines `TrustlineFact`, and `internal/rules/facts.go` exposes held non-native assets sorted deterministically with their issuer's flags (`auth_required`, `auth_revocable`, `auth_immutable`, `auth_clawback_enabled`), without echoing any balance amounts. `internal/run/run.go` fetches issuer accounts through the existing bounded concurrency and retry mechanisms, reporting issuer 404 or fetch failures gracefully as fact status. Built fixtures `13-trustline-holder.json`, `14-issuer-regulated.json`, and `15-issuer-open.json` cover regulated vs open issuers in `testdata/horizon/`.)
 - [ ] **5.6** SEP-29 memo-required check for merchant accounts. S. Deps: 0.8.
 - [ ] **5.7** Performance and rate-limit tests with many accounts. S. Deps: 2.7.
 - [ ] **5.8** Documentation site separate from the README (GitBook or equivalent): introduction with cited figures, protocol mechanics and the economic model with worked numbers, contract and rule reference, end-user guides per persona, developer guide, contributing guide. M. Deps: 4.2, 4.3. Done when: the site is linked from `README.md` and every page reflects the shipped behavior. Stays open after 5.9: its deps 4.2 and 4.3 landed on 2026-11-05, so nothing in the roadmap blocks it any more, and the economic-model and contract-reference clauses still describe a Soroban project rather than this CLI. What is left here is the persona depth 5.9's pages do not carry, and that needs an operator's questions to answer, which is 4.1.
@@ -316,6 +316,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Task 5.5: Trustline exposure facts for held assets. Exposed `trustlines` under `facts` in reports for held non-native assets, including issuer flags (`auth_required`, `auth_revocable`, `auth_immutable`, `auth_clawback_enabled`) and issuer resolution status, with zero balance values printed. Implemented pure `trustlines` helper in `internal/rules/facts.go` and bounded concurrent issuer fetching in `internal/run/run.go`. Added fixtures `13-trustline-holder.json`, `14-issuer-regulated.json`, and `15-issuer-open.json`. | 5.5 |
 | 2026-11-21 | Task 7.47 (close #198): added `internal/sanitize/domain_test.go` covering 7 cases proving IDN flag evaluates sanitized output and punycode is ASCII; updated `Domain` doc comment. | 7.47 |
 | 2026-11-21 | Task 7.46 (close #197): added `internal/sanitize/bidi_test.go` pinning all 12 bidi controls, overrides and isolates, Trojan Source attacks, and surviving RTL runes. | 7.46 |
 | 2026-11-21 | Task 7.43 (close #196): added `internal/sanitize/osc_test.go` covering BEL, ST, embedded ESC and unterminated tail cases to verify OSC 8 hyperlinks are consumed whole with no URL residual. | 7.43 |
