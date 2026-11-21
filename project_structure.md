@@ -100,6 +100,7 @@ guage/
       roles_test.go                       # one account at five roles: severity, fingerprint, accepts and the lock declaration (3.4)
       first_error_test.go                 # two ordered concurrent read failures: the first, with its account ID, wins and a queued account is never read (7.34)
       stage_cancel_test.go                # a context that ends between stages returns no report and builds no identity fetcher (7.35)
+      {identity_lazy,panic_containment,semaphore_peak}_test.go # lazy identity fetcher, panic containment, and concurrency limit peak (7.59 to 7.61)
 
   testdata/
     horizon/README.md                     # provenance of every file: which five are testnet captures, which seven are built, and how (0.6, 3.6)
