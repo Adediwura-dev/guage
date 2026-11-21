@@ -127,6 +127,9 @@ backlog() {
     '7.51	type: test	area: threshold	test(threshold): pre-auth tx exclusion in standing weight sum' \
     '7.52	type: test	area: threshold	test(threshold): early returns in MinSigners against boundary signers' \
     '7.53	type: test	area: threshold	test(threshold): weight filter at every tier against lone and mixed signers' \
+    '7.54	type: test	area: policy	test(policy): role severity catalog matrix and raised-rule counts' \
+    '7.55	type: test	area: policy	test(policy): acceptance expiry date type with UTC cutover' \
+    '7.56	type: test	area: policy	test(policy): immutable role floors per call' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \

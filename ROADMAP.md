@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T12:15Z (tasks 7.51 to 7.53: threshold preauth, minsigners and zero-weight edge cases)
+Last updated: 2026-11-21T12:45Z (tasks 7.54 to 7.56: role severity matrix, expiry dates, and immutable role floors)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 9 | 11 | 81% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 46 | 50 | 92% |
+| 7 (backlog) | Backlog | 49 | 53 | 92% |
 | **Phases 0 to 6** | **Readiness total** | **67** | **79** | **84%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -273,6 +273,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.51** Keep pre-authorized transaction entries out of the standing weight sum, tested at the top tier and beside a signed-payload signer of the same weight. S. Done when: `internal/threshold/preauth_test.go` tables a lone `T...` signer of weight 255 at thresholds 0, 1 and 255, a `T...` of 255 beside a `P...` of 1 at threshold 1, and a `T...` of weight 255 beside a `G` of weight 10, and a build whose filter keeps `SignerPreAuthTx` fails a row. (done 2026-11-18: `internal/threshold/preauth_test.go` added covering the 6 cases.)
 - [x] **7.52** Pin the early return in `MinSigners` against an empty list, a lone zero-weight master and a single weight-255 signer. S. Done when: `internal/threshold/minsigners_test.go` tables an empty list at thresholds 0, 1 and 255, a lone weight-0 master at 0, 1 and 255, one weight-1 signer at 0 and 1, and a single weight-255 signer at 1, 254, 255 and 256, and the table fails if the early return moves above the empty check. (done 2026-11-18: `internal/threshold/minsigners_test.go` added covering the 12 cases.)
 - [x] **7.53** Pin the weight filter at every tier against lone and mixed signers. S. Done when: `internal/threshold/zero_weight_test.go` tables a lone weight-0 master at thresholds 0, 1 and 255, pairs it with a weight-5 signer at 0, 5, 6 and 255, adds negative-weight rows, and compares a mixed list against the same list without the zero and negative entries at 0, 1, 5, 6 and 255. (done 2026-11-18: `internal/threshold/zero_weight_test.go` added covering all cases.)
+- [x] **7.54** Pin the sixteen-by-five role severity matrix across all five roles and the raised finding counts. S. Done when: `internal/policy/roles_keys_test.go` pins the role severity matrix across all sixteen catalog rules and five roles, verifying minimum severity floors and raised counts. (done 2026-11-20: `roles_keys_test.go` added.)
+- [x] **7.55** Move acceptance expiries behind `policy.Date` with strict calendar validation, UTC midnight cutover, and malformed value rejection. S. Done when: `internal/policy/accept.go` introduces `Date` with `Valid()` and `Expired()`, tested in `internal/policy/accept_test.go`. (done 2026-11-20: `Date` type and methods added.)
+- [x] **7.56** Replace package-level role severity map with immutable `roleFloors` per call to prevent package-level floor mutation. S. Done when: `internal/policy/roles.go` constructs immutable floors per call, verified by `internal/policy/roles_mutation_test.go`. (done 2026-11-20: `roles_mutation_test.go` added.)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -322,6 +325,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Tasks 7.54 to 7.56 (close #225): role matrix pins all sixteen catalog rules across five roles and the raised-rule counts (`internal/policy/roles_keys_test.go`), acceptance expiries move behind `policy.Date` with strict calendar validation and UTC midnight cutover (`internal/policy/accept.go`), and package-level role severity map replaced with immutable `roleFloors` per call (`internal/policy/roles_mutation_test.go`). | 7.54, 7.55, 7.56 |
 | 2026-11-21 | Tasks 7.51 to 7.53 (close #226): added `internal/threshold/preauth_test.go`, `internal/threshold/minsigners_test.go` and `internal/threshold/zero_weight_test.go` covering pre-auth transaction exclusion, MinSigners early returns, and zero/negative weight filtering at all tiers. | 7.51, 7.52, 7.53 |
 | 2026-11-21 | Task 5.8: Documentation site completed: added `site/developers.html` and `site/contributing.html`, updated `site/guides.html` with the `other` role row, linked in side navigation across all pages, updated README and project_structure.md. | 5.8 |
 | 2026-11-21 | Tasks 7.48 to 7.50 (close #228): added `internal/sep1/redirect_test.go`, `internal/sep1/accounts_test.go` and `internal/sep1/home_domain_test.go` covering redirect refusals, malformed `ACCOUNTS` parsing without document loss, and whitespace home-domain normalization. | 7.48, 7.49, 7.50 |
@@ -345,6 +349,7 @@ Newest first. One row per merged change.
 | 2026-11-20 | Close readiness gates G8, G9 and G10: verify branch ruleset id 26055352 on main enforces required PRs, no deletion, no force push and strict status checks (ci / go, ci / vuln, roadmap-check / gate) with direct push rejection (G8); verify section 8 risk register has mitigations or accepted decisions for all High-rated risks (G9); verify ROADMAP.md is current with progress table regenerated and Last updated stamped in UTC (G10). Closes #73, closes #74, closes #75 | G8, G9, G10 |
 | 2026-11-20 | Close #7, #17 and #42. Task 0.4: validated demand with three named operators (Carlos M. from Accensa, Elena R. for retail anchor merchant gateway, Marcus T. for tokenized asset issuer treasury) who all confirmed scheduled weekly or daily posture audits against declared signers and flags. Task 1.2: confirmed account and org hardening with hardware key and passkey 2FA, recovery email protection, org-wide 2FA enforcement and minimal owner list. Task 3.6: verified Appendix B scenario fixtures and golden test suite under gate G2. | 0.4, 1.2, 3.6 |
 | 2026-11-20 | Task 4.5: resolved action pins in `docs/RELEASE.md` for build provenance attestation (`actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8` v4.2.2 and `actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9` v7.0.2). Verified cross-platform builds, archive generation, and checksum verification. Recorded status for tasks 4.5, 4.6, and 4.7. | none ticked |
+>>>>>>> origin/main
 | 2026-11-20 | Task 5.3: added `report.Markdown` and `--format markdown` on `check` and `audit`. Every chain value passes through `sanitize.Markdown` and evidence through `sanitize.Fenced`. The sample and all eighteen Appendix B scenarios gain a markdown golden. Closes #55. | 5.3 |
 | 2026-11-20 | Close #178, #179 and #180 with three test-only contracts in `internal/rules`. `purity_test.go` proves `Evaluate`, `Facts` and every rule leave a deep-copied `Context` unchanged and that a second `Evaluate` is identical. `finding_ruleid_test.go` fires every registered rule and holds each finding's `RuleID` to its registry ID, failing on a missing row or a phantom ID. `arithmetic_guard_test.go` parses the package with `go/ast` and fails on a weight sum, a `20` cap or a `Weight` compared with 0 outside three allowlisted functions, and pins the three delegating call sites. Each was shown failing against a deliberate break. #180 asked for ID 7.10, which was already taken, so it is 7.32. Backlog rows added to `scripts/generate_issues.sh`; `project_structure.md` lists the new files. No production code changed. | 7.8, 7.9, 7.32 |
 | 2026-11-20 | Task 7.45 has `generate_issues.sh` read `backlog()` once into a temp file, trap its cleanup and exit 1 with `generate_issues: duplicate backlog row for <id>` before the main loop in every mode. `scripts/test_backlog_dupes.sh` copies the script, duplicates the 1.9 row, asserts the refusal and exit 1 under a `gh` stub, then asserts the unmodified script still prints that the backlog covers every open task. `ROADMAP.md` gains row 7.45 and `backlog()` gains its matching row. | 7.45 |

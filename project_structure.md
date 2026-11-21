@@ -69,7 +69,7 @@ guage/
       {config,expectations,accept}.go      # policy declarations, no decoding or acceptance logic
       {decode,validate,roles}.go           # strict loading, rejection kinds, network passphrases and the Appendix A role floors (2.4, 3.4)
       config_test.go                       # loader tests, including that the shipped example policy loads (2.4)
-      {accept,roles}_test.go               # acceptance refusals and the role-floor table (3.4)
+      {accept,roles,roles_keys,roles_mutation}_test.go # acceptance refusals, 16x5 role-floor table, raised counts and isolation (3.4, 7.54 to 7.56)
       unknown_keys_test.go                 # one load names every unknown key, sorted, never a value (7.31)
     source/
       source.go                           # Source interface and the passphrase comparison
