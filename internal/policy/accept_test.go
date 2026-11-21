@@ -11,10 +11,13 @@ import (
 
 func TestAcceptableIsExactlyTheNonAcceptableList(t *testing.T) {
 	t.Parallel()
-	// The three rules an accepted risk may never silence. This is the same table
+	// The four rules an accepted risk may never silence. This is the same table
 	// internal/run consults before matching an acceptance and validate.go consults
-	// before loading one, so a fourth entry added here must be refused in both.
-	for _, rule := range []string{"acct-missing", "acct-network-mismatch", "sig-threshold-unreachable"} {
+	// before loading one, so a fifth entry added here must be refused in both.
+	// src-disagreement joined with task 5.1: two endpoints that disagree mean the
+	// run cannot say which reading is true, and an acceptance would turn that into
+	// a quiet answer.
+	for _, rule := range []string{"acct-missing", "acct-network-mismatch", "sig-threshold-unreachable", "src-disagreement"} {
 		if Acceptable(rule) {
 			t.Errorf("%s is non-acceptable and must not be", rule)
 		}
@@ -36,7 +39,7 @@ func TestAcceptableIsExactlyTheNonAcceptableList(t *testing.T) {
 // never hold rather than read a clean report that is quietly not clean.
 func TestLoadRefusesEveryNonAcceptableRule(t *testing.T) {
 	t.Parallel()
-	for _, rule := range []string{"acct-missing", "acct-network-mismatch", "sig-threshold-unreachable"} {
+	for _, rule := range []string{"acct-missing", "acct-network-mismatch", "sig-threshold-unreachable", "src-disagreement"} {
 		body := `version = 1
 network = "testnet"
 endpoints = ["https://horizon.testnet.example"]

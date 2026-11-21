@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T13:22Z (tasks 7.65 to 7.67: load-time config boundaries)
+Last updated: 2026-11-21T13:28Z (task 5.1: multi-endpoint comparison with src-disagreement)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -38,10 +38,10 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 2 | Core | 11 | 11 | 100% |
 | 3 | Rules | 7 | 7 | 100% |
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
-| 5 | v0.2 features | 9 | 11 | 81% |
+| 5 | v0.2 features | 10 | 11 | 90% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
 | 7 (backlog) | Backlog | 60 | 64 | 93% |
-| **Phases 0 to 6** | **Readiness total** | **68** | **79** | **86%** |
+| **Phases 0 to 6** | **Readiness total** | **69** | **79** | **87%** |
 | Gates | G1 to G10 | 8 | 10 | 80% |
 <!-- PROGRESS:END -->
 
@@ -202,7 +202,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 
 ### Phase 5: v0.2 features
 
-- [ ] **5.1** Multi-endpoint comparison with `src-disagreement`. M. Deps: 4.8.
+- [x] **5.1** Multi-endpoint comparison with `src-disagreement`. M. Deps: 4.8. (done 2026-11-20, ahead of 4.8 with the owner's written go-ahead on issue #53 that morning: 4.8 is still unticked and no `v0.1.0` tag exists, so this is the one task in the phase that landed out of dependency order, and the reason is that approval rather than a reading of the dependency. `check` takes `--endpoint` up to five times and `audit` reads every entry of `endpoints`. Every endpoint's network is read and its passphrase compared before any account read; one that cannot be read is exit 3, and one on another network makes the run read nothing anywhere and names that endpoint in `acct-network-mismatch`. Accounts are read from each endpoint in turn through the same bounded pool, the first endpoint's snapshot is the one the rules evaluate, and `source.Compare` (pure, symmetric) names the fields another endpoint disagrees on: existence, last modified ledger, sequence, thresholds, flags, signers and balances as multisets, home domain and sponsor. Each disagreeing endpoint is one HIGH `src-disagreement` whose evidence names endpoints by position and fields by name, never values, so the fingerprint holds while a replica keeps lagging and no chain string reaches evidence. It is on the non-acceptable list beside the three account and threshold rules, refused at load and at match, because the run cannot tell a stale endpoint from a filtering one. It is a source finding produced by the run, like `src-rule-panic`, not a seventeenth registered rule, so the rules stay pure and the rule count is unchanged. A sixth endpoint or a repeated one is exit 2. Tests: `internal/source/compare_test.go`, `internal/run/compare_test.go`, `cmd/stellar-gauge/compare_test.go` against two fake Horizons and the built fixture `testdata/horizon/16-endpoint-disagrees.json`.)
 - [x] **5.2** `snapshot` and `diff` with baseline files and the review banner; documented guidance to store baselines outside the audited repo. M. Deps: 4.8. (done 2026-11-20: `model.Baseline` and `model.DiffReport` in `internal/model/baseline.go`, `run.Snapshot` in `internal/run/snapshot.go`, `run.Diff` in `internal/run/diff.go`, `report.DiffText`, `report.DiffJSON` and `report.DiffMarkdown` in `internal/report/diff.go`, and the `snapshot` and `diff` subcommands in `cmd/stellar-gauge/`. `snapshot --config <cfg> --out <file>` records observed `AccountSnapshot` entries with schema version 1 and the mandatory review banner warning that a baseline is a record of state, not an approval of security. `diff --config <cfg> --baseline <file> [--format text|json|markdown]` fetches live account observations and compares thresholds, added/removed/weight-changed signers, flags and home domain against the baseline, exiting 0 on match and 1 on drift. Security guidance on storing baselines outside the audited repo to mitigate threat GB1 documented in `site/guides.html`. 5.4 now has its dependencies satisfied.)
 - [x] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5. (done 2026-11-20: `report.Markdown` in `internal/report/markdown.go`, selected by `--format markdown` on `check` and `audit`, which used to refuse it. It prints the same facts, findings, exit code and limits footer as the text report; every chain-derived value goes through the existing `sanitize.Markdown` after a label this code writes, so none can open a line, and evidence goes through the existing `sanitize.Fenced`. The sanitizer contract did not change. `internal/report/markdown_test.go` builds a link, an image, a script tag and a fence-breaking backtick run from fragments and proves each prints as escaped text or stays inside its fence; the sample and all eighteen Appendix B scenarios gained a markdown golden, 19 files, with the 38 text and JSON goldens byte-identical. The CLI test that pinned the refusal was replaced by one that proves the flag is accepted and one that proves the exit code and footer survive the format. Not verified: how a given renderer treats a bare URL, which GitHub may autolink with the URL as its visible text; `site/guides.html` says so. `README.md` still calls markdown unimplemented in two places, because `scripts/sync_readme.py --check-base` refuses any README change on a branch, not only the metrics block AGENTS.md 5 describes; the maintainer owns that edit. 5.2 and 5.4 stay open: 5.2 waits on 4.8, and 5.4 on 5.2.)
 - [ ] **5.4** Scheduled GitHub Action template that opens an issue on findings, with minimal permissions and SHA pinning. M. Deps: 5.2, 5.3.
@@ -338,6 +338,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Task 5.1 (close #267): multi-endpoint comparison. `check --endpoint` repeats up to five times and `audit` reads every `endpoints` entry; every account is read from each endpoint and compared with the first by `source.Compare`, and a difference is one HIGH, non-acceptable `src-disagreement` per disagreeing endpoint, naming fields only. | 5.1 |
 | 2026-11-21 | Tasks 7.65 to 7.67 (close #259, close #139, close #140, close #141): enforce load-time config boundaries in `internal/policy` (reject path and out-of-range port in endpoint validation, keep TOML parser line and column in syntax error, and reject empty policy with no accounts). | 7.65, 7.66, 7.67 |
 | 2026-11-21 | Task 1.15 (close #244): refreshed Drips Wave submission packet inside Wave 11 with live sources, backlog recount, and sibling audits (`docs/WAVE_SUBMISSION.md`). | 1.15 |
 | 2026-11-21 | Tasks 7.62 to 7.64 (close #252, close #243): pin exact seven Finding JSON keys (`internal/model/finding_json_test.go`), validate policy `home_domain` against SEP-1 hostname label rules (`internal/policy/home_domain_test.go`), and reject 56-char base32 seed shape regardless of checksum (`internal/policy/seed_shape_test.go`). | 7.62, 7.63, 7.64 |
