@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T10:15Z (align v0.2 documentation across PRD, ARCHITECTURE, and essentials; close task 6.1)
+Last updated: 2026-11-21T10:20Z (prepare v0.2.0 release workflow and attestation path; task 6.2)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -215,7 +215,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 ### Phase 6: Release v0.2.0 and community
 
 - [x] **6.1** Update every doc for v0.2 behavior. M. Deps: Phase 5. Gate G7.
-- [ ] **6.2** Tag `v0.2.0` with attestation. S. Deps: 6.1.
+- [ ] **6.2** Tag `v0.2.0` with attestation. S. Deps: 6.1. Prepared 2026-11-20: `.github/workflows/release.yml` builds the five archives from a `v*` tag, writes and checks `checksums.txt`, attests every archive and the list with `actions/attest-build-provenance` v4.2.2, verifies both in the build job and again before publishing, and keeps `contents: write` on the publish job alone. The tag itself is not cut: `v0.2.0` is the owner's act and 6.1 merges first, so this box stays unticked until a release exists and verifies.
 - [ ] **6.3** Review false-positive reports from external users and adjust rules. M. Deps: 6.2.
 - [ ] **6.4** Decide D-07: pursue funding or program applications, with adoption evidence. M. Deps: 6.2.
 - [ ] **6.5** Outreach to Stellar issuers, anchors and treasury operators. S. Deps: 6.2.
@@ -305,6 +305,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-20 | Task 6.2: prepare the v0.2.0 attested release workflow in .github/workflows/release.yml with build provenance attestation and verify instructions in docs/RELEASE.md. | none ticked |
 | 2026-11-20 | Task 6.1 (close #61): align v0.2 documents across PRD.md, ARCHITECTURE.md, and ARCHITECTURE_ESSENTIALS.md; mark task 6.1 complete. | 6.1 |
 | 2026-11-20 | Tasks 7.33 to 7.35 (close #199, #200, #201): sanitizer conformance matrix over all four entry points; `fetchAll` takes semaphore slots in policy order so the first account error survives and a queued account is never read; `Run` checks its context after observe and before returning so a cancelled run yields no report. Backlog rows added to `scripts/generate_issues.sh`. | 7.33, 7.34, 7.35 |
 | 2026-11-20 | Close #43, #44 and #47: task 3.7 zero-config facts report and example config closed with #43. Task 4.1 dogfooding on real operator accounts (Accensa, merchant, issuer) with declared expectations verified zero false HIGH findings, closing gate G4 and issue #44. Task 4.4 added cross-platform CI matrix across Linux, macOS and Windows in .github/workflows/ci.yml and pinned line endings in .gitattributes to LF, closing issue #47. | 3.7, 4.1, 4.4, G4 |
