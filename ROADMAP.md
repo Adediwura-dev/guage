@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T13:00Z (tasks 7.59 to 7.61: lazy identity fetcher, panic containment, and concurrency limit)
+Last updated: 2026-11-21T13:05Z (gate G7 sweep: documents agree with code, recorded readings for G5 and G6)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -42,7 +42,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
 | 7 (backlog) | Backlog | 54 | 58 | 93% |
 | **Phases 0 to 6** | **Readiness total** | **67** | **79** | **84%** |
-| Gates | G1 to G10 | 7 | 10 | 70% |
+| Gates | G1 to G10 | 8 | 10 | 80% |
 <!-- PROGRESS:END -->
 
 ## 3. Readiness gates
@@ -55,7 +55,7 @@ All must be true for 100%.
 - [x] **G4** Dogfood: Gauge runs against real operator accounts with zero false HIGH findings once expectations are declared. (done 2026-11-20: verified across real operator account configurations from Accensa, merchant, and issuer profiles with declared expectations; all evaluated rules produce zero false HIGH findings.)
 - [ ] **G5** `govulncheck`, `staticcheck` and `go vet` are clean in CI, and the repo's Scorecard score is 8 or higher.
 - [ ] **G6** Releases are attested, and the verification command is documented and tested.
-- [ ] **G7** `PRD.md`, `ARCHITECTURE.md`, `ARCHITECTURE_ESSENTIALS.md`, `project_structure.md`, `AGENTS.md`, `CLAUDE.md` and `README.md` agree with the code.
+- [x] **G7** `PRD.md`, `ARCHITECTURE.md`, `ARCHITECTURE_ESSENTIALS.md`, `project_structure.md`, `AGENTS.md`, `CLAUDE.md` and `README.md` agree with the code. (done 2026-11-21: comprehensive audit brought all root briefings, site pages, and documentation into agreement with shipped code; issue #72.)
 - [x] **G8** Required status checks (tests and roadmap gate) are configured, and a direct push to the default branch is rejected. (done 2026-11-20: verified via GitHub Rulesets API on `main` under ruleset id 26055352, which requires pull requests, forbids deletion and non-fast-forward pushes, and enforces strict status checks for `ci / go`, `ci / vuln` and `roadmap-check / gate`; direct push to `upstream/main` was tested and refused with 403 / "Changes must be made through a pull request", matching task 1.3's direct push refusal on commit `ae6a05d`; issue #73.)
 - [x] **G9** No High-rated risk in section 8 is open without a mitigation task or an accepted decision. (done 2026-11-20: re-read section 8 risk register against the task list and decision log; only two risks are rated High: R-2 (maintainer overload across three projects) is mitigated by decision D-04 and task 0.3, with Phase 7 backlog tasks closed; R-5 ("No findings" read as "safe") is mitigated by task 4.3 (the "what this does not check" documentation section and report footer in `internal/report.Limits`) and the wording rule in `AGENTS.md` section 4; no open High risk lacks a mitigation task or accepted decision; issue #74.)
 - [x] **G10** This file is current: last updated within the latest merged PR. (done 2026-11-20: verified that the previous merge PR #266 updated `Last updated` to `2026-11-20T10:30Z`, and this PR updates `Last updated` with the current UTC timestamp, ticks G8, G9 and G10, appends the changelog entry in section 9, and regenerates the section 2 progress table via `scripts/roadmap_progress.sh --check`; issue #75.)
@@ -330,6 +330,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Gate G7 closes on a recorded sweep bringing every document into agreement with the code (close #241). Updated ARCHITECTURE.md, ARCHITECTURE_ESSENTIALS.md, project_structure.md, CONTRIBUTING.md, SECURITY.md, PRD.md, AGENTS.md, site/status.html, and site/mechanics.html to reflect Phase 3 completion, 16 registered rules, facts report, 200 passing tests, 38 golden files, site motion layer, and dynamic README sync. Recorded observations for gate G5 (issue #70: Scorecard 6.8 with 3 branch protection warnings under D-14, ci / go and ci / vuln clean in run 42627808348) and gate G6 (issue #71: 0 releases and 0 tags under D-12, attestation requires hosted tag workflow). | G7 |
 | 2026-11-21 | Tasks 7.59 to 7.61 (close #240): build identity fetcher lazily only when an observed account has a home domain (`internal/run/identity_lazy_test.go`), pin panic containment to one `src-rule-panic` finding (`internal/run/panic_containment_test.go`), and pin concurrency limit peak (`internal/run/semaphore_peak_test.go`). | 7.59, 7.60, 7.61 |
 | 2026-11-21 | Tasks 7.57 and 7.58 (close #232): refuse identity facts that carry a network verdict without a passphrase (`internal/model/facts_identity_test.go`), and type `DeclaredFacts.Role` as `model.Role` (`internal/model/facts_declared_test.go`). | 7.57, 7.58 |
 | 2026-11-21 | Tasks 7.54 to 7.56 (close #225): role matrix pins all sixteen catalog rules across five roles and the raised-rule counts (`internal/policy/roles_keys_test.go`), acceptance expiries move behind `policy.Date` with strict calendar validation and UTC midnight cutover (`internal/policy/accept.go`), and package-level role severity map replaced with immutable `roleFloors` per call (`internal/policy/roles_mutation_test.go`). | 7.54, 7.55, 7.56 |
