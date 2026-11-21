@@ -45,6 +45,7 @@ guage/
       model_test.go                       # severity names, fingerprint, ordering, JSON and exit-code contracts
       account_sequence_test.go            # the sequence token stays a JSON string above 2^53
       facts_nil_test.go                   # null and zero fact blocks on the wire, with round trips
+      {facts_identity,facts_declared}_test.go # network verdict without passphrase guard and typed DeclaredFacts.Role (7.57, 7.58)
       severity_bounds_test.go             # valid severities, marshal refusal and invalid-severity sort order
     strkey/
       {address,checksum,seed}.go           # SEP-23 classify, CRC16 and seed detection (2.2)

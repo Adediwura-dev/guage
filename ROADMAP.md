@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T12:45Z (tasks 7.54 to 7.56: role severity matrix, expiry dates, and immutable role floors)
+Last updated: 2026-11-21T12:55Z (tasks 7.57 and 7.58: identity network guard and typed declared role)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 9 | 11 | 81% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 49 | 53 | 92% |
+| 7 (backlog) | Backlog | 51 | 55 | 92% |
 | **Phases 0 to 6** | **Readiness total** | **67** | **79** | **84%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -276,6 +276,8 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.54** Pin the sixteen-by-five role severity matrix across all five roles and the raised finding counts. S. Done when: `internal/policy/roles_keys_test.go` pins the role severity matrix across all sixteen catalog rules and five roles, verifying minimum severity floors and raised counts. (done 2026-11-20: `roles_keys_test.go` added.)
 - [x] **7.55** Move acceptance expiries behind `policy.Date` with strict calendar validation, UTC midnight cutover, and malformed value rejection. S. Done when: `internal/policy/accept.go` introduces `Date` with `Valid()` and `Expired()`, tested in `internal/policy/accept_test.go`. (done 2026-11-20: `Date` type and methods added.)
 - [x] **7.56** Replace package-level role severity map with immutable `roleFloors` per call to prevent package-level floor mutation. S. Done when: `internal/policy/roles.go` constructs immutable floors per call, verified by `internal/policy/roles_mutation_test.go`. (done 2026-11-20: `roles_mutation_test.go` added.)
+- [x] **7.57** bug(model): refuse identity facts that carry a network verdict without a passphrase. `IdentityFacts.Validate` returns `ErrIdentityNetworkPair`, `AccountFacts.Validate` applies it when the block exists. (done 2026-11-19; issue #128)
+- [x] **7.58** feature(model): type `DeclaredFacts.Role` as `model.Role` instead of `string`, add `Role.IsValid`, and drop the string conversion in `rules.Facts`. (done 2026-11-19; issue #129)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -325,6 +327,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Tasks 7.57 and 7.58 (close #232): refuse identity facts that carry a network verdict without a passphrase (`internal/model/facts_identity_test.go`), and type `DeclaredFacts.Role` as `model.Role` (`internal/model/facts_declared_test.go`). | 7.57, 7.58 |
 | 2026-11-21 | Tasks 7.54 to 7.56 (close #225): role matrix pins all sixteen catalog rules across five roles and the raised-rule counts (`internal/policy/roles_keys_test.go`), acceptance expiries move behind `policy.Date` with strict calendar validation and UTC midnight cutover (`internal/policy/accept.go`), and package-level role severity map replaced with immutable `roleFloors` per call (`internal/policy/roles_mutation_test.go`). | 7.54, 7.55, 7.56 |
 | 2026-11-21 | Tasks 7.51 to 7.53 (close #226): added `internal/threshold/preauth_test.go`, `internal/threshold/minsigners_test.go` and `internal/threshold/zero_weight_test.go` covering pre-auth transaction exclusion, MinSigners early returns, and zero/negative weight filtering at all tiers. | 7.51, 7.52, 7.53 |
 | 2026-11-21 | Task 5.8: Documentation site completed: added `site/developers.html` and `site/contributing.html`, updated `site/guides.html` with the `other` role row, linked in side navigation across all pages, updated README and project_structure.md. | 5.8 |
