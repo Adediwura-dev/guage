@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T13:15Z (task 1.15: refresh Drips Wave submission packet inside Wave 11)
+Last updated: 2026-11-21T13:22Z (tasks 7.65 to 7.67: load-time config boundaries)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 9 | 11 | 81% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 57 | 61 | 93% |
+| 7 (backlog) | Backlog | 60 | 64 | 93% |
 | **Phases 0 to 6** | **Readiness total** | **68** | **79** | **86%** |
 | Gates | G1 to G10 | 8 | 10 | 80% |
 <!-- PROGRESS:END -->
@@ -286,6 +286,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.62** test(model): pin exact seven Finding JSON keys without omitempty. S. Done when: `internal/model/finding_json_test.go` pins the exact seven Finding JSON keys (`accepted`, `account`, `evidence`, `fingerprint`, `message`, `rule_id`, `severity`). (done 2026-11-19; issue #136)
 - [x] **7.63** security(policy): validate policy home_domain against SEP-1 hostname label rules. S. Done when: `validHomeDomain` enforces SEP-1 hostname label rules with table and agreement tests in `internal/policy/home_domain_test.go`. (done 2026-11-19; issue #137)
 - [x] **7.64** security(policy): reject 56-char base32 seed shape regardless of checksum. S. Done when: `containsSeed` in `internal/policy/decode.go` rejects any 56-character base32 token starting with S/s, tested in `internal/policy/seed_shape_test.go`. (done 2026-11-19; issue #138)
+- [x] **7.65** bug(policy): endpoint validation accepts a path and an out-of-range port. S. Done when: `validEndpoint` requires an empty path or `/`, refuses trailing colon, and checks port 1 to 65535, tested in `internal/policy/endpoint_shape_test.go`. (done 2026-11-21; issue #139)
+- [x] **7.66** feature(policy): keep the TOML parser line and column in the syntax error. S. Done when: `Load` preserves line and column in `ErrSyntax` detail and quotes `LastKey`, tested in `internal/policy/syntax_position_test.go`. (done 2026-11-21; issue #140)
+- [x] **7.67** bug(policy): empty policy with no accounts accepted at load time. S. Done when: `Config.validate` returns `ErrNoAccounts` with detail `account` when no `[[account]]` table is declared, tested in `internal/policy/empty_policy_test.go`. (done 2026-11-21; issue #141)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -335,6 +338,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Tasks 7.65 to 7.67 (close #259, close #139, close #140, close #141): enforce load-time config boundaries in `internal/policy` (reject path and out-of-range port in endpoint validation, keep TOML parser line and column in syntax error, and reject empty policy with no accounts). | 7.65, 7.66, 7.67 |
 | 2026-11-21 | Task 1.15 (close #244): refreshed Drips Wave submission packet inside Wave 11 with live sources, backlog recount, and sibling audits (`docs/WAVE_SUBMISSION.md`). | 1.15 |
 | 2026-11-21 | Tasks 7.62 to 7.64 (close #252, close #243): pin exact seven Finding JSON keys (`internal/model/finding_json_test.go`), validate policy `home_domain` against SEP-1 hostname label rules (`internal/policy/home_domain_test.go`), and reject 56-char base32 seed shape regardless of checksum (`internal/policy/seed_shape_test.go`). | 7.62, 7.63, 7.64 |
 | 2026-11-21 | Gate G7 closes on a recorded sweep bringing every document into agreement with the code (close #241). Updated ARCHITECTURE.md, ARCHITECTURE_ESSENTIALS.md, project_structure.md, CONTRIBUTING.md, SECURITY.md, PRD.md, AGENTS.md, site/status.html, and site/mechanics.html to reflect Phase 3 completion, 16 registered rules, facts report, 200 passing tests, 38 golden files, site motion layer, and dynamic README sync. Recorded observations for gate G5 (issue #70: Scorecard 6.8 with 3 branch protection warnings under D-14, ci / go and ci / vuln clean in run 42627808348) and gate G6 (issue #71: 0 releases and 0 tags under D-12, attestation requires hosted tag workflow). | G7 |

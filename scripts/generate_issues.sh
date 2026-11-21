@@ -138,6 +138,9 @@ backlog() {
     '7.62	type: test	area: model	test(model): pin exact seven Finding JSON keys without omitempty' \
     '7.63	type: security	area: policy	security(policy): validate policy home_domain against SEP-1 hostname label rules' \
     '7.64	type: security	area: policy	security(policy): reject 56-char base32 seed shape regardless of checksum' \
+    '7.65	type: bug	area: policy	bug(policy): endpoint validation accepts a path and an out-of-range port' \
+    '7.66	type: feature	area: policy	feature(policy): keep the TOML parser line and column in the syntax error' \
+    '7.67	type: bug	area: policy	bug(policy): empty policy with no accounts accepted at load time' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
