@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T11:25Z (task 5.5: trustline exposure facts for held assets)
+Last updated: 2026-11-21T11:35Z (task 5.6: SEP-29 memo-required check for merchants)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -38,10 +38,10 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 2 | Core | 11 | 11 | 100% |
 | 3 | Rules | 7 | 7 | 100% |
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
-| 5 | v0.2 features | 6 | 11 | 54% |
+| 5 | v0.2 features | 7 | 11 | 63% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
 | 7 (backlog) | Backlog | 40 | 44 | 90% |
-| **Phases 0 to 6** | **Readiness total** | **64** | **79** | **81%** |
+| **Phases 0 to 6** | **Readiness total** | **65** | **79** | **82%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
 
@@ -205,7 +205,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **5.3** Markdown output with safe escaping and fenced evidence. M. Deps: 2.5. (done 2026-11-20: `report.Markdown` in `internal/report/markdown.go`, selected by `--format markdown` on `check` and `audit`, which used to refuse it. It prints the same facts, findings, exit code and limits footer as the text report; every chain-derived value goes through the existing `sanitize.Markdown` after a label this code writes, so none can open a line, and evidence goes through the existing `sanitize.Fenced`. The sanitizer contract did not change. `internal/report/markdown_test.go` builds a link, an image, a script tag and a fence-breaking backtick run from fragments and proves each prints as escaped text or stays inside its fence; the sample and all eighteen Appendix B scenarios gained a markdown golden, 19 files, with the 38 text and JSON goldens byte-identical. The CLI test that pinned the refusal was replaced by one that proves the flag is accepted and one that proves the exit code and footer survive the format. Not verified: how a given renderer treats a bare URL, which GitHub may autolink with the URL as its visible text; `site/guides.html` says so. `README.md` still calls markdown unimplemented in two places, because `scripts/sync_readme.py --check-base` refuses any README change on a branch, not only the metrics block AGENTS.md 5 describes; the maintainer owns that edit. 5.2 and 5.4 stay open: 5.2 waits on 4.8, and 5.4 on 5.2.)
 - [ ] **5.4** Scheduled GitHub Action template that opens an issue on findings, with minimal permissions and SHA pinning. M. Deps: 5.2, 5.3.
 - [x] **5.5** Trustline exposure facts (issuer flags for each held asset). M. Deps: 0.6. (done 2026-11-19: `internal/model/facts.go` defines `TrustlineFact`, and `internal/rules/facts.go` exposes held non-native assets sorted deterministically with their issuer's flags (`auth_required`, `auth_revocable`, `auth_immutable`, `auth_clawback_enabled`), without echoing any balance amounts. `internal/run/run.go` fetches issuer accounts through the existing bounded concurrency and retry mechanisms, reporting issuer 404 or fetch failures gracefully as fact status. Built fixtures `13-trustline-holder.json`, `14-issuer-regulated.json`, and `15-issuer-open.json` cover regulated vs open issuers in `testdata/horizon/`.)
-- [ ] **5.6** SEP-29 memo-required check for merchant accounts. S. Deps: 0.8.
+- [x] **5.6** SEP-29 memo-required check for merchant accounts. S. Deps: 0.8. (done 2026-11-19: `internal/rules/identity.go` registers `id-sep29-memo-required` (WARN, acceptable), checking that accounts with the `merchant` role have the SEP-29 `config.memo_required` account data entry populated with `"MQ=="` (base64 of `"1"`). `internal/source/horizon.go` strictly decodes the Horizon account `data` mapping into `snapshot.Data` on `AccountSnapshot`, rejecting non-string values with `ErrDecode`. The rule is a pure function that evaluates snapshot posture without network calls or transaction submissions. Unit and fake-server tests in `identity_test.go` and `horizon_test.go` cover merchant/non-merchant roles, present, missing, and malformed data entries.)
 - [ ] **5.7** Performance and rate-limit tests with many accounts. S. Deps: 2.7.
 - [ ] **5.8** Documentation site separate from the README (GitBook or equivalent): introduction with cited figures, protocol mechanics and the economic model with worked numbers, contract and rule reference, end-user guides per persona, developer guide, contributing guide. M. Deps: 4.2, 4.3. Done when: the site is linked from `README.md` and every page reflects the shipped behavior. Stays open after 5.9: its deps 4.2 and 4.3 landed on 2026-11-05, so nothing in the roadmap blocks it any more, and the economic-model and contract-reference clauses still describe a Soroban project rather than this CLI. What is left here is the persona depth 5.9's pages do not carry, and that needs an operator's questions to answer, which is 4.1.
 - [x] **5.9** Documentation site v1 on GitHub Pages, separate from the README: hand-written static HTML, CSS and vanilla JS under `site/` (no generator, so the dependency rule holds), deployed by the `pages` workflow. Seven pages: overview, rules, policy, mechanics, guides, status and a 404. M. Deps: none (8.2 and 4.3 are not preconditions for documenting what already ships; 5.8's economic-model and contract clauses do not apply to a Go CLI). Done when: the site is live at `https://posture-sec.github.io/guage/`, linked from `README.md`, and every page states shipped behavior only. (done 2026-11-02: the site is live and the design is flat, no gradients, every claim traced to code or an observed testnet run; the pages that describe unshipped behavior say so, e.g. `policy.html` records that only network, existence and flags are compared today.)
@@ -316,6 +316,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Task 5.6: SEP-29 memo-required check for merchant accounts. Registered `id-sep29-memo-required` in `internal/rules/identity.go` as a pure rule warning when a `merchant` role account does not have `config.memo_required` set to `"MQ=="` (base64 of `"1"`). Decoded `data` map in `internal/source/horizon.go` under `AccountSnapshot.Data` with strict string validation. Added unit and fake-server tests. | 5.6 |
 | 2026-11-21 | Task 5.5: Trustline exposure facts for held assets. Exposed `trustlines` under `facts` in reports for held non-native assets, including issuer flags (`auth_required`, `auth_revocable`, `auth_immutable`, `auth_clawback_enabled`) and issuer resolution status, with zero balance values printed. Implemented pure `trustlines` helper in `internal/rules/facts.go` and bounded concurrent issuer fetching in `internal/run/run.go`. Added fixtures `13-trustline-holder.json`, `14-issuer-regulated.json`, and `15-issuer-open.json`. | 5.5 |
 | 2026-11-21 | Task 7.47 (close #198): added `internal/sanitize/domain_test.go` covering 7 cases proving IDN flag evaluates sanitized output and punycode is ASCII; updated `Domain` doc comment. | 7.47 |
 | 2026-11-21 | Task 7.46 (close #197): added `internal/sanitize/bidi_test.go` pinning all 12 bidi controls, overrides and isolates, Trojan Source attacks, and surviving RTL runes. | 7.46 |
