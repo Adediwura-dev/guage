@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T11:45Z (task 5.7: performance and rate-limit tests with many accounts)
+Last updated: 2026-11-21T11:55Z (tasks 7.48 to 7.50: SEP-1 redirect, malformed accounts and home domain tests)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 8 | 11 | 72% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 40 | 44 | 90% |
+| 7 (backlog) | Backlog | 43 | 47 | 91% |
 | **Phases 0 to 6** | **Readiness total** | **66** | **79** | **83%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -267,6 +267,9 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.43** Consume OSC 8 hyperlinks whole: `internal/sanitize/osc_test.go` exercises BEL and ST terminations, embedded CSI colour and unterminated tails through `Text()`. S. Deps: 2.5. Done when: `go test ./internal/sanitize -run TestOSC8HyperlinkConsumedWhole -race -count=1` passes, and the test fails if hyperlink escapes leave any URL behind. (done 2026-11-20: `internal/sanitize/osc_test.go` added covering BEL, ST, embedded ESC and unterminated tail cases; label survival and absence of `]8;;`, `http` and URI hosts verified; issue #196)
 - [x] **7.46** Table the bidi overrides and isolate controls: `internal/sanitize/bidi_test.go` pins every directional mark, override, and isolate control across ALM, LRM, RLM, LRE, RLE, PDF, LRO, RLO, LRI, RLI, FSI, PDI, Trojan Source strings, surviving RTL runes, and ASCII host IDN detection. S. Deps: 2.5. Done when: `go test ./internal/sanitize -run TestBidiControlsRemovedPerRune -race -count=1` passes, and the test fails if any bidi control survives. (done 2026-11-20: `internal/sanitize/bidi_test.go` added covering all 12 bidi controls; issue #197)
 - [x] **7.47** test(sanitize): flag IDN home domains and their punycode form. S. Deps: 2.5. Done when: `internal/sanitize/domain_test.go` adds `TestDomainIDNMatrix` asserting that the IDN flag follows sanitization of the printed host rather than raw input and punycode (`xn--`) always returns false; `go test ./internal/sanitize -run TestDomainIDNMatrix -race -count=1` passes. (done 2026-11-20: `internal/sanitize/domain_test.go` covers 7 cases across plain ASCII, punycode, Cyrillic lookalike, mixed script, tag-masked, bidi-masked, and C1-masked hosts; updated `Domain` doc comment; issue #198)
+- [x] **7.48** Prove SEP-1 redirect refusals stop before a request leaves and the refused `Location` never reaches the report. S. Deps: 3.5. (done 2026-11-20: `internal/sep1/redirect_test.go` checks refused schemes, hosts and ports are not contacted, the location is not echoed, and same-host relative redirects still work.)
+- [x] **7.49** Count malformed SEP-1 `ACCOUNTS` entries without dropping the parsed document. S. Deps: 3.5. (done 2026-11-20: `internal/sep1/accounts_test.go` covers absent, empty, mixed-validity and all-invalid entries, including a document with a passphrase.)
+- [x] **7.50** Treat a whitespace SEP-1 home domain as absent, not hostile. S. Deps: 3.5. (done 2026-11-20: `internal/sep1/home_domain_test.go` covers whitespace, normalization, rejected domains and no network dial for absent or invalid domains.)
 ## 6. Dependency map (critical path)
 
 `0.2, 0.4 -> 1.1 -> 1.4 -> 2.1 -> 2.2, 2.3, 2.5 -> 2.7 -> 2.8 -> 2.9 -> 3.1 to 3.5 -> 3.7 -> 4.1 -> 4.8`
@@ -316,6 +319,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Tasks 7.48 to 7.50 (close #228): added `internal/sep1/redirect_test.go`, `internal/sep1/accounts_test.go` and `internal/sep1/home_domain_test.go` covering redirect refusals, malformed `ACCOUNTS` parsing without document loss, and whitespace home-domain normalization. | 7.48, 7.49, 7.50 |
 | 2026-11-21 | Task 5.7: Performance, rate-limit, and bounded-concurrency tests with many accounts in `internal/source/horizon_test.go`. Verified peak in-flight requests stay bounded by concurrency caps under 50-account load, HTTP 429 rate limits with `Retry-After` back off and complete without leaking responses, rate-limit exhaustion fails closed after bounded retries, concurrent mixed load enforces timeouts and body size caps, and programmatic checks verify the 0.12 defaults. | 5.7 |
 | 2026-11-21 | Task 5.6: SEP-29 memo-required check for merchant accounts. Registered `id-sep29-memo-required` in `internal/rules/identity.go` as a pure rule warning when a `merchant` role account does not have `config.memo_required` set to `"MQ=="` (base64 of `"1"`). Decoded `data` map in `internal/source/horizon.go` under `AccountSnapshot.Data` with strict string validation. Added unit and fake-server tests. | 5.6 |
 | 2026-11-21 | Task 5.5: Trustline exposure facts for held assets. Exposed `trustlines` under `facts` in reports for held non-native assets, including issuer flags (`auth_required`, `auth_revocable`, `auth_immutable`, `auth_clawback_enabled`) and issuer resolution status, with zero balance values printed. Implemented pure `trustlines` helper in `internal/rules/facts.go` and bounded concurrent issuer fetching in `internal/run/run.go`. Added fixtures `13-trustline-holder.json`, `14-issuer-regulated.json`, and `15-issuer-open.json`. | 5.5 |
