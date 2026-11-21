@@ -1,6 +1,6 @@
 # ROADMAP: Gauge
 
-Last updated: 2026-11-21T10:45Z (chore(deps): bump actions-weekly group)
+Last updated: 2026-11-21T10:50Z (task 7.36: reject duplicate or malformed rule IDs in the registry)
 Roadmap version: 3
 
 This file is the single source of truth for remaining work. It is read before every task and updated after every change.
@@ -40,7 +40,7 @@ The repository is 100% ready when every task in Phases 0 to 6 is done and every 
 | 4 | Dogfood and release v0.1.0 | 4 | 9 | 44% |
 | 5 | v0.2 features | 5 | 11 | 45% |
 | 6 | Release v0.2.0 and community | 1 | 5 | 20% |
-| 7 (backlog) | Backlog | 35 | 39 | 89% |
+| 7 (backlog) | Backlog | 36 | 40 | 90% |
 | **Phases 0 to 6** | **Readiness total** | **63** | **79** | **79%** |
 | Gates | G1 to G10 | 7 | 10 | 70% |
 <!-- PROGRESS:END -->
@@ -256,6 +256,7 @@ Constraint on the two remaining experimental tasks: Gauge never builds or submit
 - [x] **7.33** Sanitizer conformance matrix across `Text`, `Markdown`, `Fenced` and `Domain` (issue #199). M. Deps: 2.5. Done when: `internal/sanitize/conformance_test.go` holds one hostile corpus (OSC 8, CSI colour, C1 U+009B, RLO U+202E, U+200B, tag U+E0041, NUL, truncated UTF-8, a backtick run) against all four entry points with no ESC, no dropped rune and valid UTF-8, and `Fenced` equals a fence longer than any backtick run around `stripControls(s)`. (done 2026-11-20: test only, no defect found; a deliberate break of `Fenced` or the tag range fails it.)
 - [x] **7.34** Keep the first account error when a later read fails (issue #200). M. Deps: 2.8. Done when: `TestFirstAccountErrorSurvives` passes `-race -count=20` with A failing first, B released only after, C never read, and the error wrapping `errA` with A's ID and not `errB`. (done 2026-11-20: the test exposed that workers raced for the semaphore, so C was read first in 2649 of 3000 runs; `fetchAll` now takes slots in policy order and checks the context after winning one, approved by the owner as outside the fail closure. Passes 3000 of 3000.)
 - [x] **7.35** Stop the run when the context ends between stages (issue #201). M. Deps: 2.8, 3.5. Done when: a run cancelled during `Network` against a mismatched endpoint returns `context.Canceled`, a zero report and builds no identity fetcher. (done 2026-11-20: `Run` checks its context after observe and before returning, both wrapped with `run:`.)
+- [x] **7.36** Reject duplicate or malformed rule IDs in the registry: `TestRegistryIDs` asserts `All()` holds exactly sixteen IDs, each unique and matching `^(acct|sig|thr|flag|id|src)-[a-z0-9]+(-[a-z0-9]+)*$`. S. Deps: 3.1. Done when: `go test ./internal/rules -run TestRegistryIDs -race -count=1` passes, and a duplicate or camelCase ID makes it fail. (done 2026-11-20: `internal/rules/registry_ids_test.go` reads the shipped strings through `All()` and checks the count, uniqueness and shape, with the six allowed prefixes held in one table; issue #198)
 
 - [x] **7.38** test(run): prove a network mismatch skips identity fetches too. S. Deps: none. Done when: `internal/run/mismatch_short_circuit_test.go` drives `Check` on testnet against a mainnet source whose account read and identity factory are fatal tripwires, and asserts two skipped high mismatch findings plus `ExitFindings`. (done 2026-11-20: added the test and confirmed it passes under the race detector; issue #208.)
 - [x] **7.39** feat(cli): expose bounded concurrency on `check`. M. Deps: none. Done when: `--concurrency` defaults to 8, accepts 1 through 32, reports exit 2 outside the range, reaches `CheckRequest.Concurrency`, and `cmd/stellar-gauge/concurrency_flag_test.go` measures peak in-flight account reads at 1 and the default. (done 2026-11-20: added `parseConcurrency`, threaded the value to `run.Check`, and measured peak account reads through an injected source; issue #209.)
@@ -311,6 +312,7 @@ Newest first. One row per merged change.
 
 | Date (UTC) | Change | Tasks |
 |---|---|---|
+| 2026-11-21 | Task 7.36 (close #198): added `internal/rules/registry_ids_test.go` to pin the count (16), uniqueness, and shape of rule IDs in the registry across the six allowed prefix families. | 7.36 |
 | 2026-11-21 | Bump actions-weekly group in GitHub workflows: actions/setup-go to v7.1.0 and github/codeql-action. | none ticked |
 | 2026-11-20 | Task 7.7 (close #177): cover every registered rule with zero, missing-only, and mismatch-only contexts in `internal/rules/zero_context_test.go`. | 7.7 |
 | 2026-11-20 | Task 7.42 (close #126): scope accepted risks to one network in policy and run, with tests covering network isolation in `internal/run/accept_network_test.go`. | 7.42 |

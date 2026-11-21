@@ -111,6 +111,7 @@ backlog() {
     '6.3	type: research	area: rules	docs(triage): review external false-positive reports' \
     '6.4	type: research	area: docs	docs(decisions): decide funding and applications (D-07)' \
     '6.5	type: docs	area: docs	docs(outreach): contact issuers, anchors and treasury teams' \
+    '7.36	type: test	area: rules	test(rules): reject duplicate or malformed rule IDs' \
     '7.38	type: test	area: run	test(run): prove network mismatch skips identity fetches' \
     '7.39	type: feature	area: cli	feat(cli): expose bounded concurrency on check' \
     '7.40	type: bug	area: cli	fix(cli): share format rejection diagnostics' \
