@@ -135,6 +135,9 @@ backlog() {
     '7.30	type: test	area: threshold	test(threshold): cross-check both answers over mixed signers' \
     '7.31	type: feature	area: policy	feature(policy): report every unknown config key, not only the first' \
     '7.32	type: test	area: rules	test(rules): guard that no rule restates threshold arithmetic' \
+    '7.33	type: security	area: sanitize	security(sanitize): conformance matrix across all four entry points' \
+    '7.34	type: test	area: run	test(run): keep the first account error when a later read fails' \
+    '7.35	type: fix	area: run	fix(run): stop the run when the context ends between stages' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
