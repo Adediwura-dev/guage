@@ -141,9 +141,9 @@ backlog() {
     '7.65	type: bug	area: policy	bug(policy): endpoint validation accepts a path and an out-of-range port' \
     '7.66	type: feature	area: policy	feature(policy): keep the TOML parser line and column in the syntax error' \
     '7.67	type: bug	area: policy	bug(policy): empty policy with no accounts accepted at load time' \
-    '7.68	type: test	area: sep1	test(sep1): record an oversized stellar.toml as StepSize, not a read' \
-    '7.69	type: test	area: sep1	test(sep1): honour Retry-After on 429 and give up after the retry budget' \
-    '7.70	type: test	area: sep1	test(sep1): classify NAT64, 6to4, carrier NAT and unique local addresses' \
+    '7.71	type: test	area: sep1	test(sep1): record an oversized stellar.toml as StepSize, not a read' \
+    '7.72	type: test	area: sep1	test(sep1): honour Retry-After on 429 and give up after the retry budget' \
+    '7.73	type: test	area: sep1	test(sep1): classify NAT64, 6to4, carrier NAT and unique local addresses' \
     'G1	type: test	area: rules	gate: every P0 requirement has passing tests' \
     'G2	type: test	area: rules	gate: every scenario has a fixture and expected findings' \
     'G3	type: test	area: cli	gate: fail-closed paths all exit non-zero' \
