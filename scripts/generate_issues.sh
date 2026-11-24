@@ -161,6 +161,8 @@ backlog() {
     '7.65	type: bug	area: policy	bug(policy): endpoint validation accepts a path and an out-of-range port' \
     '7.66	type: feature	area: policy	feature(policy): keep the TOML parser line and column in the syntax error' \
     '7.67	type: bug	area: policy	bug(policy): empty policy with no accounts accepted at load time' \
+    '7.69	type: test	area: source	test(source): return ErrTooLarge for a body one byte over the cap' \
+    '7.70	type: test	area: source	test(source): check passphrases without echoing either value' \
     '7.68	type: test	area: source	test(source): keep exponential backoff under the five second ceiling' \
     '7.71	type: test	area: sep1	test(sep1): record an oversized stellar.toml as StepSize, not a read' \
     '7.72	type: test	area: sep1	test(sep1): honour Retry-After on 429 and give up after the retry budget' \
